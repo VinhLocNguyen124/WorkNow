@@ -1,0 +1,62 @@
+{
+  "name": "WorkNow",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-firebase/app": "^10.1.0",
+    "@react-native-firebase/auth": "^10.1.1",
+    "@react-native-picker/picker": "^1.9.8",
+    "@react-navigation/bottom-tabs": "^5.11.2",
+    "@react-navigation/native": "^5.8.10",
+    "@react-navigation/stack": "^5.12.8",
+    "@types/react": "^17.0.0",
+    "@types/react-native": "^0.63.37",
+    "axios": "^0.21.0",
+    "i18n-js": "^3.8.0",
+    "lodash.memoize": "^4.1.2",
+    "moment": "^2.29.1",
+    "native-base": "^2.13.15",
+    "react": "16.11.0",
+    "react-native": "0.62.0",
+    "react-native-document-picker": "^4.2.0",
+    "react-native-gesture-handler": "^1.9.0",
+    "react-native-image-picker": "^3.1.1",
+    "react-native-image-zoom-viewer": "^3.0.1",
+    "react-native-localize": "^2.0.1",
+    "react-native-permissions": "^3.0.0",
+    "react-native-reanimated": "^1.13.2",
+    "react-native-safe-area-context": "^3.1.9",
+    "react-native-screens": "^2.15.0",
+    "react-native-skeleton-placeholder": "^3.0.2",
+    "react-native-svg": "^12.1.0",
+    "react-native-svg-transformer": "^0.14.3",
+    "react-native-typescript-transformer": "^1.2.13",
+    "react-native-vector-icons": "^7.1.0",
+    "react-redux": "^7.2.2",
+    "reanimated-bottom-sheet": "^1.0.0-alpha.22",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "typescript": "^4.1.2"
+  },
+  "devDependencies": {
+    "@babel/core": "7.12.9",
+    "@babel/runtime": "7.12.5",
+    "@react-native-community/eslint-config": "0.0.5",
+    "babel-jest": "24.9.0",
+    "eslint": "6.8.0",
+    "jest": "24.9.0",
+    "metro-react-native-babel-preset": "0.58.0",
+    "react-test-renderer": "16.11.0"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}

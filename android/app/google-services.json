@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "421076469731",
+    "project_id": "work-now-3a6c0",
+    "storage_bucket": "work-now-3a6c0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:421076469731:android:a3d4922a62e200ea6c42d6",
+        "android_client_info": {
+          "package_name": "com.worknow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "421076469731-bos35qtgat3sqefufo6p2hivvhne325q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.worknow",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "421076469731-6t9g3phl4gfcm56h5cmff38dedcf1c28.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1z5yMzfgq7gg5m8mqFoqtYPMP29Iu37E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "421076469731-6t9g3phl4gfcm56h5cmff38dedcf1c28.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
