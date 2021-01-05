@@ -45,6 +45,8 @@ import {
     cloudinaryUploadImage
 } from '../../helpers/MediaConfig';
 import moment from 'moment';
+import { FormatNumber } from '../../helpers/FormatNumber';
+import { returnSnapPoints } from '../../helpers/UIHandling';
 
 //hooks
 
@@ -54,11 +56,9 @@ import { getListProvince, onSelectProvince, getListCityOrDistrict, onSelectCity 
 
 //Components
 import Delayed from './../../components/Delayed';
-import FormInput from './../../components/FormInput';
-import FormDropDown from './../../components/FormDropDown';
-import TextHighLightButton from './../../components/TextHighLightButton';
-import Footer from './../../components/Footer';
 import Header from './../../components/Header';
+import BottomSheet from 'reanimated-bottom-sheet';
+import BottomSheetFilterContent from './components/BottomSheetFilterContent';
 
 //Consts
 import { Colors } from '../../constansts/color';
@@ -115,12 +115,63 @@ const listMatchedJobs = [
         urljobavatar: "https://media-exp1.licdn.com/dms/image/C510BAQEkTDAkXMKqeQ/company-logo_100_100/0/1558065625621?e=1617235200&v=beta&t=FwwQ1SqA0dOqRLAZIn6Ttp_5tS1VPzbXU4IretwFoMI",
         jobdescription: 'Write readable and maintainable code that not only performs the task but eases future modifications\n Work in a team environment, cooperating on designing and implementing user friendly solutions\n Keep up with security standards for user privacy \nTranslate designs and wireframes into highly reusable code \nKeep track of work progress and work in an objective oriented environment \nCreate and maintain documentation on solution design and maintenance',
     },
+    {
+        id: 4,
+        jobname: "Mobile Developer AzureTech",
+        companyname: 'AFRY',
+        compatibility: '0.8',
+        location: 'Ho Chi Minh City',
+        position: 'fresher',
+        date: 'a day ago',
+        active: true,
+        applicant: 2,
+        urljobavatar: "https://media-exp1.licdn.com/dms/image/C4E0BAQEyxTIG0-1-9g/company-logo_100_100/0/1600097097514?e=1617235200&v=beta&t=epIoK27VPzpIRYzoEJIPW57XPoiQcFmk0IhNpHWx054",
+        jobdescription: 'Write readable and maintainable code that not only performs the task but eases future modifications\n Work in a team environment, cooperating on designing and implementing user friendly solutions\n Keep up with security standards for user privacy \nTranslate designs and wireframes into highly reusable code \nKeep track of work progress and work in an objective oriented environment \nCreate and maintain documentation on solution design and maintenance',
+    },
+    {
+        id: 5,
+        jobname: "Website Developer",
+        companyname: 'Sigma Aviation Services',
+        compatibility: '0.65',
+        location: 'Ho Chi Minh City',
+        position: 'junior',
+        date: 'two days ago',
+        active: false,
+        urljobavatar: "https://media-exp1.licdn.com/dms/image/C4D0BAQEUvYPSC8F0sQ/company-logo_100_100/0/1519915974042?e=1617235200&v=beta&t=psnNO83wAUM2ULuMlOOQEni9Kg6DkLJWa6Rhlq3keHc",
+        jobdescription: 'Write readable and maintainable code that not only performs the task but eases future modifications\n Work in a team environment, cooperating on designing and implementing user friendly solutions\n Keep up with security standards for user privacy \nTranslate designs and wireframes into highly reusable code \nKeep track of work progress and work in an objective oriented environment \nCreate and maintain documentation on solution design and maintenance',
+    },
+    {
+        id: 6,
+        jobname: "ReactJS/React Native developer",
+        companyname: 'Evizi',
+        compatibility: '0.5',
+        location: 'Ho Chi Minh City',
+        position: 'techlead',
+        date: 'a day ago',
+        active: true,
+        urljobavatar: "https://media-exp1.licdn.com/dms/image/C560BAQFOwe6fDnE-Kg/company-logo_100_100/0/1556602193231?e=1617235200&v=beta&t=QUTzxUsv0LvX35oUQpfSpUwX9WsqhSVTR7gwKFVujF4",
+        jobdescription: 'Write readable and maintainable code that not only performs the task but eases future modifications\n Work in a team environment, cooperating on designing and implementing user friendly solutions\n Keep up with security standards for user privacy \nTranslate designs and wireframes into highly reusable code \nKeep track of work progress and work in an objective oriented environment \nCreate and maintain documentation on solution design and maintenance',
+    },
+    {
+        id: 7,
+        jobname: "Frontend Developer",
+        companyname: 'Doo Technology Limited',
+        compatibility: '0.4',
+        location: 'Ho Chi Minh City',
+        position: 'fresher',
+        date: 'a day ago',
+        active: true,
+        applicant: 2,
+        urljobavatar: "https://media-exp1.licdn.com/dms/image/C510BAQEkTDAkXMKqeQ/company-logo_100_100/0/1558065625621?e=1617235200&v=beta&t=FwwQ1SqA0dOqRLAZIn6Ttp_5tS1VPzbXU4IretwFoMI",
+        jobdescription: 'Write readable and maintainable code that not only performs the task but eases future modifications\n Work in a team environment, cooperating on designing and implementing user friendly solutions\n Keep up with security standards for user privacy \nTranslate designs and wireframes into highly reusable code \nKeep track of work progress and work in an objective oriented environment \nCreate and maintain documentation on solution design and maintenance',
+    },
 ]
 
 const ListMatchedJobScreen = () => {
     console.log("render Edit Intro Screen")
 
     //States
+    const [typeFilter, setTypeFilter] = useState('');
     const loadingProvince = useSelector(state => state.listChoice.loadingProvince);
     const listProvince = useSelector(state => state.listChoice.listProvince);
     const listCityOrDistrict = useSelector(state => state.listChoice.listCityOrDistrict);
@@ -128,6 +179,7 @@ const ListMatchedJobScreen = () => {
     const path = useSelector(state => state.listChoice.path);
 
     //others
+    const sheetRef = React.useRef(null);
     const navigation = useNavigation();
     const route = useRoute();
     const dispatch = useDispatch();
@@ -151,6 +203,11 @@ const ListMatchedJobScreen = () => {
 
     //-------------------------Functions---------------------------------
 
+    const openBottomSheet = async (type: string) => {
+        await setTypeFilter(type);
+        await sheetRef.current.snapTo(0);
+
+    }
 
 
     //--------------------------------------------------
@@ -196,15 +253,80 @@ const ListMatchedJobScreen = () => {
                 textRightButton=""
             ></Header>
 
-            {loadingProvince ?
-                <ActivityIndicator size="large" color={Colors.MainBlue}></ActivityIndicator>
-                :
-                <FlatList
-                    data={listMatchedJobs}
-                    renderItem={_renderItem}
-                    keyExtractor={keyExtractor}
-                ></FlatList>
-            }
+            <Delayed wait={500}>
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ height: 60, }}>
+
+                    <TouchableOpacity
+                        style={tempStyles.filter_btn}
+                        onPress={() => openBottomSheet('position')}
+                    >
+                        <Text style={tempStyles.filter_txt}>Position</Text>
+                        <AntDesign name="caretdown" size={12} color={Colors.Gray}></AntDesign>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={tempStyles.filter_btn}
+                        onPress={() => openBottomSheet('company')}
+                    >
+                        <Text style={tempStyles.filter_txt}>Company</Text>
+                        <AntDesign name="caretdown" size={12} color={Colors.Gray}></AntDesign>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={tempStyles.filter_btn}
+                        onPress={() => openBottomSheet('jobname')}
+                    >
+                        <Text style={tempStyles.filter_txt}>Job name</Text>
+                        <AntDesign name="caretdown" size={12} color={Colors.Gray}></AntDesign>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={{ ...tempStyles.filter_btn, marginRight: 10 }}
+                        onPress={() => openBottomSheet('skills')}
+                    >
+                        <Text style={tempStyles.filter_txt}>Skills</Text>
+                        <AntDesign name="caretdown" size={12} color={Colors.Gray}></AntDesign>
+                    </TouchableOpacity>
+
+                </ScrollView>
+            </Delayed>
+
+
+            <Delayed wait={500}>
+                <View style={{ backgroundColor: '#f0f0f5', padding: 5, paddingLeft: 10 }}>
+                    <Text style={{ color: Colors.Gray }}>{FormatNumber(1425)} {Number(1425) > 2 ? "results" : "result"}</Text>
+                </View>
+            </Delayed>
+
+
+
+            <Delayed wait={500} noneLoading={false}>
+                {loadingProvince ?
+                    <ActivityIndicator size="large" color={Colors.MainBlue}></ActivityIndicator>
+                    :
+                    <FlatList
+                        data={listMatchedJobs}
+                        renderItem={_renderItem}
+                        keyExtractor={keyExtractor}
+                    ></FlatList>
+                }
+            </Delayed>
+
+
+            <Delayed wait={500}>
+                <BottomSheet
+                    ref={sheetRef}
+                    snapPoints={returnSnapPoints(Dimens.heightScreen, 0)}
+                    initialSnap={6}
+                    enabledInnerScrolling={false}
+                    renderContent={() =>
+                        (
+                            <BottomSheetFilterContent
+                                type={typeFilter}
+                            ></BottomSheetFilterContent>
+                        )}
+                ></BottomSheet>
+            </Delayed>
 
 
         </View>
@@ -212,7 +334,14 @@ const ListMatchedJobScreen = () => {
 }
 
 const tempStyles = StyleSheet.create({
-
+    filter_btn: {
+        borderWidth: 1, borderColor: Colors.Gray, flexDirection: 'row',
+        paddingHorizontal: 15, height: 30, alignSelf: 'center', marginLeft: 10,
+        alignItems: 'center', borderRadius: 15, paddingBottom: 3
+    },
+    filter_txt: {
+        color: Colors.Gray, fontSize: 16, marginRight: 5
+    }
 });
 
 export default ListMatchedJobScreen;

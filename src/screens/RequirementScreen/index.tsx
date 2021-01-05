@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-console.disableYellowBox = true;
+// console.disableYellowBox = true;
 
 //Firebase
 import auth from '@react-native-firebase/auth';
@@ -137,7 +137,7 @@ const RequirementScreen = () => {
                     <Ionicons name="md-arrow-back" size={24} color={Colors.Gray}></Ionicons>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Requirement</Text>
-                <TouchableOpacity style={{ width: 45 }} onPress={onPressSaveIntro}>
+                <TouchableOpacity style={{ width: 50 }} onPress={onPressSaveIntro}>
                     {false ?
                         <ActivityIndicator color={Colors.MainBlue} />
                         :

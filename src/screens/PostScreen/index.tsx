@@ -42,6 +42,7 @@ import {
     onLaunchCamera,
     cloudinaryUploadImage
 } from '../../helpers/MediaConfig';
+import { returnSnapPoints } from '../../helpers/UIHandling';
 
 //apis
 import { fetchData } from '../../apis/apiCaller';
@@ -155,10 +156,6 @@ const PostScreen = () => {
         sheetRefWatchingScope.current.snapTo(6);
     }
 
-    const returnSnapPoints = (height: number) => {
-        return [height, height - 10, height - 20, height - 30, height - 40, height - 50, -500]
-    }
-
     const onPressBottomSheetItem = (lable: string) => {
         console.log(lable);
     }
@@ -264,7 +261,7 @@ const PostScreen = () => {
             <Delayed wait={waitLoadingTime}>
                 <BottomSheet
                     ref={sheetRef}
-                    snapPoints={returnSnapPoints(bottomSheetHeight)}
+                    snapPoints={returnSnapPoints(bottomSheetHeight, -500)}
                     initialSnap={6}
                     enabledInnerScrolling={false}
                     renderContent={() =>
@@ -280,7 +277,7 @@ const PostScreen = () => {
             <Delayed wait={waitLoadingTime}>
                 <BottomSheet
                     ref={sheetRefWatchingScope}
-                    snapPoints={returnSnapPoints(Dimens.heightScreen)}
+                    snapPoints={returnSnapPoints(Dimens.heightScreen, -500)}
                     initialSnap={6}
                     enabledInnerScrolling={false}
                     renderContent={() =>
