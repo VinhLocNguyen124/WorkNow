@@ -59,6 +59,7 @@ import Delayed from './../../components/Delayed';
 import Header from './../../components/Header';
 import BottomSheet from 'reanimated-bottom-sheet';
 import BottomSheetFilterContent from './components/BottomSheetFilterContent';
+import JobItem from './components/JobItem';
 
 //Consts
 import { Colors } from '../../constansts/color';
@@ -209,33 +210,20 @@ const ListMatchedJobScreen = () => {
 
     }
 
+    const closeBottomSheet = () => {
+
+        sheetRef.current.snapTo(6);
+
+    }
+
 
     //--------------------------------------------------
     const _renderItem = useCallback(
         ({ item }) => (
-            <View style={{ flexDirection: 'column', padding: 10, borderBottomWidth: 1, borderBottomColor: Colors.LightGray }}>
-
-
-
-
-                <Text style={{ ...styles.text, color: Colors.MainBlue, fontWeight: 'bold', fontSize: 16, textAlign: 'justify' }}
-                    numberOfLines={1} ellipsizeMode="tail"
-                >{item.jobname}</Text>
-
-                <Text style={{ ...styles.text, fontSize: 13 }}>{item.companyname}</Text>
-                <Text style={{ ...styles.text, fontSize: 13 }}>{item.location}, Vietnam</Text>
-                <Text style={{ ...styles.text, fontSize: 13, fontWeight: 'bold' }}><Text style={{ color: Colors.DarkTurquoise }}>{Number(item.compatibility) * 100}%</Text> compatibility <Text style={{ color: '#03fc66', fontWeight: 'bold', fontSize: 20 }}>{Number(item.compatibility) > 0.6 ? "✓" : null}</Text></Text>
-
-                <View style={{ height: 1, backgroundColor: Colors.LightGray, width: "20%", marginVertical: 5 }}></View>
-                <Text style={{ ...styles.text }}>{item.date} - <Text style={{ fontSize: 15, color: Colors.DarkTurquoise }}>{item.active ? "Actively recruiting" : "Expired"}</Text></Text>
-                <TouchableOpacity style={{ padding: 10, backgroundColor: '#1dcf70', borderRadius: 5, marginTop: 10, width: '70%', alignSelf: 'flex-end' }}>
-                    <Text style={{ fontWeight: 'bold', color: 'white', alignSelf: 'center' }}>Apply now</Text>
-                </TouchableOpacity>
-
-                <Image source={{ uri: item.urljobavatar }} style={{ height: 80, width: 80, position: 'absolute', top: 20, right: 20 }}></Image>
-
-            </View>
-
+            <JobItem
+                key={item.id}
+                item={item}
+            ></JobItem>
         )
         ,
         []
@@ -281,16 +269,23 @@ const ListMatchedJobScreen = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={{ ...tempStyles.filter_btn, marginRight: 10 }}
+                        style={{ ...tempStyles.filter_btn, }}
                         onPress={() => openBottomSheet('skills')}
                     >
                         <Text style={tempStyles.filter_txt}>Skills</Text>
                         <AntDesign name="caretdown" size={12} color={Colors.Gray}></AntDesign>
                     </TouchableOpacity>
 
+                    <TouchableOpacity
+                        style={{ ...tempStyles.filter_btn, marginRight: 10 }}
+                        onPress={() => openBottomSheet('location')}
+                    >
+                        <Text style={tempStyles.filter_txt}>Location</Text>
+                        <AntDesign name="caretdown" size={12} color={Colors.Gray}></AntDesign>
+                    </TouchableOpacity>
+
                 </ScrollView>
             </Delayed>
-
 
             <Delayed wait={500}>
                 <View style={{ backgroundColor: '#f0f0f5', padding: 5, paddingLeft: 10 }}>
@@ -298,33 +293,30 @@ const ListMatchedJobScreen = () => {
                 </View>
             </Delayed>
 
-
-
             <Delayed wait={500} noneLoading={false}>
-                {loadingProvince ?
-                    <ActivityIndicator size="large" color={Colors.MainBlue}></ActivityIndicator>
-                    :
-                    <FlatList
-                        data={listMatchedJobs}
-                        renderItem={_renderItem}
-                        keyExtractor={keyExtractor}
-                    ></FlatList>
-                }
-            </Delayed>
 
+                <FlatList
+                    data={listMatchedJobs}
+                    renderItem={_renderItem}
+                    keyExtractor={keyExtractor}
+                ></FlatList>
+
+            </Delayed>
 
             <Delayed wait={500}>
                 <BottomSheet
                     ref={sheetRef}
                     snapPoints={returnSnapPoints(Dimens.heightScreen, 0)}
                     initialSnap={6}
-                    enabledInnerScrolling={false}
+                    enabledInnerScrolling={true}
+                    enabledContentGestureInteraction={false}
                     renderContent={() =>
-                        (
-                            <BottomSheetFilterContent
-                                type={typeFilter}
-                            ></BottomSheetFilterContent>
-                        )}
+                    (
+                        <BottomSheetFilterContent
+                            type={typeFilter}
+                            onPressOutside={closeBottomSheet}
+                        ></BottomSheetFilterContent>
+                    )}
                 ></BottomSheet>
             </Delayed>
 

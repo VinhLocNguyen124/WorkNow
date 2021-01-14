@@ -15,6 +15,11 @@ import {
 //helpers
 
 //Components
+import PositionFilter from './PositionFilter';
+import CompanyFilter from './CompanyFilter';
+import JobNameFilter from './JobNameFilter';
+import SkillsFilter from './SkillsFilter';
+import LocationFilter from './LocationFilter';
 
 //Consts
 import { Colors } from '../../../constansts/color';
@@ -33,59 +38,6 @@ const BottomSheetContentFilter = (props) => {
         }
     }, []);
 
-    const renderContent = () => {
-        switch (type) {
-            case 'date':
-                return <View style={{ width: "100%", backgroundColor: 'white', height: 100 }}>
-
-                    <Text style={{ marginBottom: 20 }}>{type}</Text>
-
-                </View>
-                break;
-            case 'position':
-                return (
-                    <View style={{ width: "100%", backgroundColor: 'white', }}>
-
-                        <Text>{type}</Text>
-
-                    </View>
-                );
-                break;
-            case 'company':
-                return (
-                    <View style={{ width: "100%", backgroundColor: 'white', }}>
-
-                        <Text>{type}</Text>
-
-                    </View>
-                );
-                break;
-            case 'jobname':
-                return (
-                    <View style={{ width: "100%", backgroundColor: 'white', }}>
-
-                        <Text>{type}</Text>
-
-                    </View>
-                );
-                break;
-            case 'skills':
-                return (
-                    <View style={{ width: "100%", backgroundColor: 'white', }}>
-
-                        <Text>{type}</Text>
-
-                    </View>
-                );
-                break;
-
-
-            default:
-                return null
-                break;
-        }
-    }
-
 
     return (
         <View style={tempStyles.ws_all_container}>
@@ -101,43 +53,23 @@ const BottomSheetContentFilter = (props) => {
                 {
 
                     type === 'position' ?
-                        <View style={{ width: "100%", backgroundColor: 'white', }}>
-
-                            <TouchableOpacity
-                                style={tempStyles.filter_btn}
-
-                            >
-                                <Text style={tempStyles.filter_txt}>Position</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={tempStyles.filter_btn}
-
-                            >
-                                <Text style={tempStyles.filter_txt}>Position</Text>
-                            </TouchableOpacity>
-
-                        </View>
+                        <PositionFilter></PositionFilter>
                         :
                         type === 'company' ?
-                            <View style={{ width: "100%", backgroundColor: 'white', }}>
-
-                                <Text>{type}</Text>
-
-                            </View>
+                            <CompanyFilter></CompanyFilter>
                             :
                             type === 'jobname' ?
-                                <View style={{ width: "100%", backgroundColor: 'white', }}>
-
-                                    <Text>{type}</Text>
-
-                                </View>
+                                <JobNameFilter></JobNameFilter>
                                 :
-                                <View style={{ width: "100%", backgroundColor: 'white', }}>
-
-                                    <Text>{type}</Text>
-
-                                </View>
+                                type === 'skills' ?
+                                    <SkillsFilter></SkillsFilter>
+                                    :
+                                    <LocationFilter></LocationFilter>
                 }
+
+                <TouchableOpacity style={{ padding: 10, backgroundColor: '#1dcf70', borderRadius: 5, marginVertical: 20, width: '100%', }}>
+                    <Text style={{ fontWeight: 'bold', color: 'white', alignSelf: 'center' }}>View results</Text>
+                </TouchableOpacity>
 
             </View>
         </View>

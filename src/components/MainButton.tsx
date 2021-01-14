@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity, } from 'react-native';
+import { Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 import { styles } from '../screens/Styles/styles';
 
 const MainButton = (props) => {
     console.log('render MainButton');
-    const { onPress, title } = props;
+    const { onPress, title, waiting } = props;
     return (
         <TouchableOpacity
             style={styles.button}
             onPress={onPress}
         >
-            <Text style={{ color: 'white', fontWeight: '500' }}>{title}</Text>
+            {waiting ? <ActivityIndicator size={'small'} color={'white'}></ActivityIndicator> :
+                <Text style={{ color: 'white', fontWeight: '500' }}>{title}</Text>}
         </TouchableOpacity>
     );
 }
@@ -30,6 +31,7 @@ const areEqual = (prevProps, nextProps) => {
 MainButton.propTypes = {
     onPress: PropTypes.func,
     title: PropTypes.string,
+    waiting: PropTypes.bool,
 };
 
 MainButton.defaultProps = {

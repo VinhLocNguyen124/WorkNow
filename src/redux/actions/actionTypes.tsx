@@ -28,6 +28,13 @@ export const SET_DEFAULT_SKILL = "SET_DEFAULT_SKILL";
 export const ADD_DEFAULT_SKILL = "ADD_DEFAULT_SKILL";
 
 //List University Actions
-export const SET_LIST_UNI = "SET_LIST_UNI";
+export const GET_LIST_UNI = "SET_LIST_UNI";
 export const SELECT_UNI = "SELECT_UNI";
 export const SEARCH_UNI = "SEARCH_UNI";
+
+//List Matched Job Actions
+export const GET_LIST_COMPANY_FILTER = "GET_LIST_COMPANY_FILTER";
+export const SEARCH_COMPANY_FILTER = "SEARCH_COMPANY_FILTER";
+
+//Login Actions
+export const SAVE_ACCOUNT = "SAVE_ACCOUNT";

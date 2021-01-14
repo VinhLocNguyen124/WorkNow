@@ -16,6 +16,7 @@ import auth from '@react-native-firebase/auth';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 //screens
+import CustomDrawerContent from './src/components/CustomDrawerContent';
 import HomeScreen from './src/screens/HomeScreen/index';
 import LoadingScreen from './src/screens/LoadingScreen/index';
 import LoginScreen from './src/screens/LoginScreen/index';
@@ -33,19 +34,26 @@ import ListUniScreen from './src/screens/ListUniScreen/index';
 import MessageDetailScreen from './src/screens/MessageDetailScreen/index';
 import RequirementScreen from './src/screens/RequirementScreen/index';
 import ListMatchedJobScreen from './src/screens/ListMatchedJobScreen/index';
+import JobDetailScreen from './src/screens/JobDetailScreen/index';
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen/index';
 
 //navigation packages
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 //Navigators
+const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 //Redux
 import { Provider } from 'react-redux';
 import store from './src/redux/store/index';
+
+//consts
+import { Colors } from './src/constansts/color';
 
 //transition configs
 const config = {
@@ -92,6 +100,9 @@ const App = () => {
           headerShown: false
         }}></Stack.Screen>
         <Stack.Screen name="Register" component={RegisterScreen} options={{
+          headerShown: false
+        }}></Stack.Screen>
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{
           headerShown: false
         }}></Stack.Screen>
       </Stack.Navigator>
@@ -188,6 +199,7 @@ const App = () => {
   }
 
   const createAppFlow = () => {
+
     return (
       <Stack.Navigator>
         <Stack.Screen name="BottomTabs" component={createBottomTabs}
@@ -249,8 +261,30 @@ const App = () => {
             headerShown: false,
           }}
         ></Stack.Screen>
+        <Stack.Screen name="JobDetail" component={JobDetailScreen}
+          options={{
+            headerShown: false,
+          }}
+        ></Stack.Screen>
       </Stack.Navigator>
     );
+  }
+
+  const createDrawer = () => {
+    const navigation = useNavigation();
+    return (
+      <Drawer.Navigator
+        drawerType="back"
+        drawerContent={props => <CustomDrawerContent navigation={navigation} />}
+      >
+        <Drawer.Screen name="DrawerApp" component={createAppFlow}
+          options={{
+            headerShown: false,
+          }}
+        ></Drawer.Screen>
+      </Drawer.Navigator>
+    );
+
   }
 
   if (initializing) return null;
@@ -260,7 +294,7 @@ const App = () => {
         <Stack.Navigator>
           {user ?
             <Stack.Screen
-              name="App" children={createAppFlow}
+              name="App" children={createDrawer}
               options={{
                 headerShown: false
               }}
@@ -271,7 +305,8 @@ const App = () => {
               options={{
                 headerShown: false
               }}
-            ></Stack.Screen>}
+            ></Stack.Screen>
+          }
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

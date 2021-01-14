@@ -63,9 +63,7 @@ import Header from './../../components/Header';
 import { Colors } from '../../constansts/color';
 import { Dimens } from '../../constansts/dimension';
 
-
 const ListChoiceScreen = () => {
-    console.log("render Edit Intro Screen")
 
     //States
     const loadingProvince = useSelector(state => state.listChoice.loadingProvince);
@@ -81,14 +79,12 @@ const ListChoiceScreen = () => {
     const title = route.params.title;
 
     //-------------------------Effects-----------------------------------
-
     useEffect(() => {
         if (title === 'province') {
             dispatch(getListProvince());
         } else {
             dispatch(getListCityOrDistrict(path));
         }
-
 
         return () => {
             console.log("Edit Intro Screen Unmount");
@@ -97,10 +93,6 @@ const ListChoiceScreen = () => {
     }, []);
 
     //-------------------------Functions---------------------------------
-
-
-
-
     //--------------------------------------------------
     const _renderItem = useCallback(
         ({ item }) => (

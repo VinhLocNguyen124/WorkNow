@@ -100,7 +100,9 @@ const HomeScreen = () => {
         <View style={[styles.container, { backgroundColor: Colors.LightGray }]}>
             {/*  Header  */}
             <View style={styles.header}>
-                <Image source={require('../../assets/images/locnguyen.jpg')} style={styles.avatarSmall} />
+                <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                    <Ionicons name="menu-sharp" size={30} color={Colors.Gray}></Ionicons>
+                </TouchableOpacity>
                 <View style={tempStyles.search_bar_container}>
                     <Ionicons name="search" size={18} color={'black'} />
                     <TextInput
@@ -111,7 +113,7 @@ const HomeScreen = () => {
                     // value={value}
                     ></TextInput>
                 </View>
-                <TouchableOpacity onPress={signOutUser}>
+                <TouchableOpacity >
                     <Ionicons name="qr-code-sharp" size={25} color={Colors.Gray}></Ionicons>
                 </TouchableOpacity>
 
@@ -147,7 +149,7 @@ const tempStyles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 5,
         borderRadius: 5,
-        marginRight: 10
+        marginHorizontal: 10
     },
     input_search_bar: {
         color: Colors.Gray,

@@ -39,7 +39,6 @@ export const styles = StyleSheet.create({
         backgroundColor: 'transparent'
     },
     form: {
-        marginBottom: 40,
         marginHorizontal: 30,
     },
     inputTitle: {

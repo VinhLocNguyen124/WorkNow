@@ -77,8 +77,6 @@ const cloudinaryUploadImage = async (photo) => {
     } catch (error) {
         return error;
     }
-
 }
-
 
 export { onLaunchImageGallery, onLaunchCamera, cloudinaryUploadImage }

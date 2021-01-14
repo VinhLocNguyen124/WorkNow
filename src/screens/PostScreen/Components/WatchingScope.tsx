@@ -99,7 +99,7 @@ const WatchingScope = (props) => {
     );
 }
 
-const tempStyles = StyleSheet.create({
+export const tempStyles = StyleSheet.create({
     ws_all_container: {
         backgroundColor: 'rgba(0,0,0,0.5)', height: height
     },

@@ -4,7 +4,10 @@ import {
     Text,
     StatusBar,
     Image,
-    LayoutAnimation
+    LayoutAnimation,
+    Keyboard,
+    TextInput,
+    TouchableOpacity,
 } from 'react-native';
 
 //Firebase
@@ -14,7 +17,7 @@ import { FirebaseErrorRespond } from '../../helpers/FirebaseErrorRespond';
 //Styles & Images & Icons
 import BackGround from './../../assets/images/svg/BackGround';
 import { styles } from '../Styles/styles';
-import { Paths } from '../../constansts/path';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 //Navigation
 import { useNavigation } from '@react-navigation/native';
@@ -23,13 +26,19 @@ import { useNavigation } from '@react-navigation/native';
 import { setI18nConfig, translate } from '../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
 
+//redux
+import { useSelector, useDispatch } from 'react-redux';
+import { saveAccount } from '../../redux/actions/login';
+
 //Components
 import MainButton from '../../components/MainButton';
 import FormInput from '../../components/FormInput';
 import TextHighLightButton from '../../components/TextHighLightButton';
+import { CheckBox } from 'native-base';
 
 //Consts
-
+import { Paths } from '../../constansts/path';
+import { Colors } from '../../constansts/color';
 
 
 const RegisterScreen = () => {
@@ -40,11 +49,15 @@ const RegisterScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState(null);
+    const [waitingRegister, setWaitingRegister] = useState(false);
+    const [checkSaveAccount, setCheckSaveAccount] = useState(false);
+    const [hidePassword, setHidePassword] = useState(true);
 
-    //Navigation
+    //Others
+    const dispatch = useDispatch();
     const navigation = useNavigation();
 
-    //excute in the first render
+    //--------------------------------Effects--------------------------------
     useEffect(() => {
         //similar with componentDidmount
         RNLocalize.addEventListener('change', setI18nConfig);
@@ -60,21 +73,37 @@ const RegisterScreen = () => {
         }
     }, []);
 
-
+    //--------------------------------Functions--------------------------------
     const handleSignUp = () => {
         console.log(email, password, name);
+        Keyboard.dismiss();
+        setWaitingRegister(true);
+
         if (email === "" || password === "" || name === "") {
             FirebaseErrorRespond("empty fields", (mess) => setErrorMessage(mess));
         } else {
             auth()
                 .createUserWithEmailAndPassword(email, password)
                 .then(userCredentials => {
+
+                    setWaitingRegister(false);
+                    if (checkSaveAccount) {
+                        dispatch(saveAccount(email, password, true));
+                    }
+
                     return userCredentials.user.updateProfile({
                         displayName: name
                     });
                 })
-                .catch(error => FirebaseErrorRespond(error.code, (message) => setErrorMessage(message)));
+                .catch(error => {
+                    setWaitingRegister(false);
+                    FirebaseErrorRespond(error.code, (message) => setErrorMessage(message));
+                });
         }
+    }
+
+    const onShowAndHidePassWord = () => {
+        setHidePassword(!hidePassword);
     }
 
     return (
@@ -111,14 +140,29 @@ const RegisterScreen = () => {
                         value={email}
                     />
 
-                    <FormInput
-                        style={{ marginBottom: 30 }}
-                        title={translate('Password')}
-                        onChangeText={password => setPassword(password)}
-                        value={password}
-                    />
+                    <View style={{ marginBottom: 30, }}>
+                        <Text style={styles.inputTitle}>{translate('Password')}</Text>
+                        <TextInput
+                            style={styles.input}
+                            secureTextEntry={hidePassword ? true : false}
+                            autoCapitalize="none"
+                            onChangeText={password => setPassword(password)}
+                            value={password}
+                        ></TextInput>
 
-                    <MainButton onPress={handleSignUp} title={translate('Sign Up')} />
+                        <TouchableOpacity style={{
+                            position: 'absolute', right: 5, top: 25,
+                        }} onPress={onShowAndHidePassWord}>
+                            <Entypo name={hidePassword ? "eye-with-line" : "eye"} size={20} color={Colors.Gray}></Entypo>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                        <CheckBox checked={checkSaveAccount} color={Colors.MainBlue} onPress={() => setCheckSaveAccount(!checkSaveAccount)} />
+                        <Text style={{ marginLeft: 20, marginBottom: 10 }}>Save your account</Text>
+                    </View>
+
+                    <MainButton onPress={handleSignUp} title={translate('Sign Up')} waiting={waitingRegister} />
 
                     <TextHighLightButton
                         onPress={() => navigation.navigate("Login")}

@@ -1,0 +1,6 @@
+export const Notes = {
+    intro: "VUI LÒNG ĐỌC KỸ LƯU Ý SỬ DỤNG NÀY. TRƯỚC KHI TẢI ỨNG DỤNG XUỐNG HOẶC ĐANG SỬ DỤNG SẢN PHẨM, DỊCH VỤ CỦA CHÚNG TÔI TRONG LẦN ĐẦU TIÊN.",
+    info: "1. Chúng tôi thu thập và xử lý các thông tin của bạn, như là tên, địa chỉ email khi bạn đăng ký. Bạn phải cung cấp chính xác và đầy đủ thông tin, cập nhật thông tin và đồng ý cung cấp cho chúng tôi bất kỳ bằng chứng nào về danh tính theo yêu cầu hợp lý của chúng tôi. Nếu các thông tin mà bạn cung cấp cho chúng tôi thay đổi, ví dụ, nếu bạn thay đổi địa chỉ email, hoặc nếu bạn muốn hủy tài khoản, xin vui lòng cập nhật chi tiết bằng cách gửi yêu cầu đến chúng tôi.",
+    email: "2. Khi đăng nhập bằng tài khoản Gmail các bạn buộc phải sử dụng tài khoản Gmail của mình. Điều này sẽ giúp ích cho các bạn trong quá trình thay đổi thông tin sau này. Trân trọng cảm ơn !",
+    private: "3. Bạn cam kết và đảm bảo rằng bạn là một cá nhân về mặt pháp lý có toàn quyền tham gia giao kết thỏa thuận theo pháp luật nước Cộng hòa xã hội chủ nghĩa Việt Nam.",
+}

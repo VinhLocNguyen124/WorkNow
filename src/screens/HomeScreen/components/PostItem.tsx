@@ -120,13 +120,13 @@ const PostItem = (props) => {
                 <Image source={require('../../../assets/images/locnguyen.jpg')} style={styles.avatar} />
                 <View style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                     <TextHighLight
-                        mainText={'Jonathan Pollard'}
+                        mainText={'Nguyen Vinh Loc'}
                         subText={'- 3rd+'}
                         fontSizeMT={16}
                         fontSizeST={12}
                         colorST={Colors.Gray}
                     />
-                    <Text style={styles.text}>Non-Compete Layer, Trade Secret Lawyer ...</Text>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.text}>Fresher developer, IkoIOS Hanoi Tech Center</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
                         <Text style={styles.text}>{moment(date).fromNow()} - </Text>
                         <Ionicons name={seescope === "anyone" ? "earth" : "people"} size={14} color={Colors.Gray}></Ionicons>

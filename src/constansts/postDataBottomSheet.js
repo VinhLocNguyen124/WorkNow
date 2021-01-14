@@ -11,14 +11,14 @@ export const dataBottomSheet = [
     },
     {
         icon: <FontAwesome name="video-camera" size={18} color={Colors.Gray}></FontAwesome>,
-        label: "Take a video"
+        label: "Take a photo"
     },
     {
         icon: <FontAwesome5 name="award" size={25} color={Colors.Gray}></FontAwesome5>,
         label: "Celebrate an occasion"
     },
     {
-        icon: <FontAwesome name="photo" size={18} color={Colors.Gray}></FontAwesome>,
-        label: "Add a photo"
+        icon: <FontAwesome name="file" size={18} color={Colors.Gray}></FontAwesome>,
+        label: "Add a pdf file"
     },
 ]

@@ -49,7 +49,7 @@ import {
 
 //redux & actions
 import { useSelector, useDispatch } from 'react-redux';
-import { setListUni, onSelectUni, onSearchUni } from '../../redux/actions/listUni';
+import { getListUni, onSelectUni, onSearchUni } from '../../redux/actions/listUni';
 
 //Components
 import Delayed from './../../components/Delayed';
@@ -63,7 +63,6 @@ import Header from './../../components/Header';
 import { Colors } from '../../constansts/color';
 import { Dimens } from '../../constansts/dimension';
 
-
 const ListUniScreen = () => {
     console.log("render List Uni Screen")
 
@@ -71,16 +70,14 @@ const ListUniScreen = () => {
     const listUni = useSelector(state => state.listUni.listUni);
     const [textSearch, setTextSearch] = useState('');
 
-
     //others
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
     //-------------------------Effects-----------------------------------
-
     useEffect(() => {
 
-        dispatch(setListUni());
+        dispatch(getListUni());
 
         return () => {
             console.log("List Uni Screen Unmount");
@@ -90,12 +87,8 @@ const ListUniScreen = () => {
 
     //-------------------------Functions---------------------------------
     const onChangeSearchText = (text) => {
-
         dispatch(onSearchUni(text));
     }
-
-
-
     //--------------------------------------------------
     const _renderItem = useCallback(
         ({ item }) => (
@@ -143,10 +136,6 @@ const ListUniScreen = () => {
                     keyExtractor={keyExtractor}
                 ></FlatList>
             </Delayed>
-
-
-
-
         </View>
     );
 }

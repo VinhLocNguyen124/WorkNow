@@ -32,14 +32,15 @@ const FullScreenImageModal = (props) => {
 
     //------------------------Effects---------------------------
     useEffect(() => {
-        Image.getSize(imgurl, (width, height) => setImgDimen({ width, height }))
+
+        const getSizeTimeout = setTimeout(() => {
+            Image.getSize(imgurl, (width, height) => setImgDimen({ width, height }))
+        }, 0);
 
         return () => {
-
+            clearTimeout(getSizeTimeout);
         }
     }, []);
-
-
 
     return (
         <Modal
@@ -67,7 +68,7 @@ const FullScreenImageModal = (props) => {
             <ImageViewer imageUrls={[
                 {
                     url: imgurl,
-                    width: imgDimen.height < imgDimen.width ? FitImageDimension(imgDimen.width, imgDimen.height, 'w') : FitImageDimension(imgDimen.width, imgDimen.height, 'w') * 0.9,
+                    width: imgDimen.height < imgDimen.width ? FitImageDimension(imgDimen.width, imgDimen.height, 'h') : FitImageDimension(imgDimen.width, imgDimen.height, 'w') * 0.9,
                     height: imgDimen.height < imgDimen.width ? FitImageDimension(imgDimen.width, imgDimen.height, 'w') : FitImageDimension(imgDimen.width, imgDimen.height, 'h') * 0.9
 
                 }

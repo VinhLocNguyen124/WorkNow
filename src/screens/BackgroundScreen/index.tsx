@@ -47,14 +47,14 @@ const dataExp = [
     {
         id: 0,
         major: "Mobile Application Developer",
-        company: "Ba Ria Vung Tau University",
-        position: "Freelance"
+        company: "IkoIOS Hanoi Tech Center",
+        position: "Fresher"
     },
     {
         id: 1,
         major: "Web Application Developer",
-        company: "TrueTech",
-        position: "Techlead"
+        company: "FraziTech",
+        position: "Intern"
     },
 ]
 
@@ -62,7 +62,7 @@ const dataEdu = [
     {
         id: 0,
         school: "Ba Ria Vung Tau University",
-        major: "Mobile Application Developer",
+        major: "Mobile Application and Game Programming",
         session: "2017 - 2021"
     },
 

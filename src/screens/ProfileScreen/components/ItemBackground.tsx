@@ -27,7 +27,7 @@ const ItemBackground = (props) => {
         }}
             onPress={onPress}
         >
-            <Image source={require('../../../assets/images/billgate.jpeg')} style={{ height: 50, width: 50, marginRight: 10 }}></Image>
+            <Image source={require('../../../assets/images/random_list.png')} style={{ height: 50, width: 50, marginRight: 10 }}></Image>
             <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                 <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{major}</Text>
                 <Text style={{ fontSize: 14, }}>{company}</Text>

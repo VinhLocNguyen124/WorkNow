@@ -8,8 +8,10 @@ import {
     Button,
     TextInput,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 //Styles & Images & Icons
+import { tempStyles } from './WatchingScope';
 
 //helpers
 
@@ -20,8 +22,9 @@ import BottomSheetItem from './BottomSheetItem';
 import { Colors } from '../../../constansts/color';
 
 
+
 const BottomSheetList = (props) => {
-    const { data, onPress, wait } = props;
+    const { data, onPress, onPressOutside } = props;
 
     useEffect(() => {
 
@@ -37,39 +40,43 @@ const BottomSheetList = (props) => {
                 key={index}
                 icon={item.icon}
                 label={item.label}
-                onPress={onPress}
+                onPress={() => onPress(item.label)}
             ></BottomSheetItem>
         );
     });
 
     return (
-        <View
-            style={{
-                backgroundColor: 'white',
-                height: 450,
-                borderTopWidth: 1.5,
-                borderLeftWidth: 1.5,
-                borderRightWidth: 1.5,
-                borderColor: Colors.LightGray,
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
-            }}
-        >
-            <View style={{
-                height: 40,
-                backgroundColor: 'transparent',
-                width: "100%",
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
-                <View style={{ width: 60, backgroundColor: Colors.Gray, height: 4, marginBottom: 10 }}></View>
+        <View style={tempStyles.ws_all_container}>
+            <TouchableOpacity style={tempStyles.ws_outside_touch} onPress={onPressOutside}>
+
+            </TouchableOpacity>
+
+            <View style={tempStyles.ws_main_container}>
+                <View style={tempStyles.ws_header}>
+                    <View style={tempStyles.ws_horizontal_bar}></View>
+                </View>
+
+                {elmItem}
+
+                <View style={{ ...tempStyles.ws_header, height: 20 }} />
+
             </View>
-
-            {elmItem}
-
         </View>
+
     );
 
 }
+
+BottomSheetList.propTypes = ({
+    onPressOutside: PropTypes.func,
+    onPress: PropTypes.func,
+    data: PropTypes.array
+});
+
+BottomSheetList.defaultProps = ({
+    onPressOutside: null,
+    onPress: null,
+});
+
 
 export default React.memo(BottomSheetList);

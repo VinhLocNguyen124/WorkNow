@@ -66,14 +66,14 @@ const ProfileScreen = () => {
                             <FontAwesome name="pencil" size={20} color={'black'}></FontAwesome>
                         </TouchableOpacity>
                         <View style={{ flexDirection: 'column', margin: marginStandart, }}>
-                            <Text style={styles.headerTitle}>Vinh Loc Nguyen</Text>
+                            <Text style={styles.headerTitle}>Nguyen Vinh Loc</Text>
                             <Text style={styles.textNormal}>Student at Ba Ria Vung Tau University</Text>
                             <Text style={styles.textNormal}>Vung Tau, Ba Ria-Vung Tau, Viet Nam</Text>
                             <Text style={styles.textNormal}>0 connections</Text>
                         </View>
 
                         <Image
-                            source={require('../../assets/images/billgate.jpeg')}
+                            source={require('../../assets/images/locnguyen.jpg')}
                             style={{
                                 height: 100,
                                 width: 100,

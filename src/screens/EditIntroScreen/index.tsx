@@ -67,7 +67,6 @@ import { Dimens } from '../../constansts/dimension';
 
 const EditIntroScreen = () => {
     console.log("render Edit Intro Screen")
-
     //States
     const province = useSelector(state => state.listChoice.province);
     const city = useSelector(state => state.listChoice.city);
@@ -78,8 +77,7 @@ const EditIntroScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
-    //-------------------------Effects-----------------------------------
-
+    //------------------------Effects-----------------------------------
     useEffect(() => {
 
         return () => {
@@ -87,17 +85,10 @@ const EditIntroScreen = () => {
 
         }
     }, []);
-
     //-------------------------Functions---------------------------------
     const onPressSaveIntro = () => {
-
     }
-
-
-
     //--------------------------------------------------
-
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -187,7 +178,6 @@ const EditIntroScreen = () => {
                             } else {
                                 ToastAndroid.show("Please select province before selecting city/district", ToastAndroid.SHORT);
                             }
-
                         }}
                     ></FormDropDown>
 
@@ -204,8 +194,6 @@ const EditIntroScreen = () => {
 
                 </ScrollView>
             </Delayed>
-
-
         </View>
     );
 }

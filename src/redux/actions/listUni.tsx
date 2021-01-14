@@ -8,12 +8,12 @@ import { returnExpectUniArray, checkExistingItemInArray } from '../../helpers/Ar
 
 
 
-export const setListUni = () => (dispatch, getState) => {
+export const getListUni = () => (dispatch, getState) => {
 
     const newlistUni = returnExpectUniArray(listUni);
 
     dispatch({
-        type: ActionTypes.SET_LIST_UNI,
+        type: ActionTypes.GET_LIST_UNI,
         payload: newlistUni,
     });
 }

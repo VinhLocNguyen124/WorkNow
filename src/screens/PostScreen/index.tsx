@@ -43,6 +43,8 @@ import {
     cloudinaryUploadImage
 } from '../../helpers/MediaConfig';
 import { returnSnapPoints } from '../../helpers/UIHandling';
+import DocumentPicker from 'react-native-document-picker';
+import PDF from 'react-native-pdf';
 
 //apis
 import { fetchData } from '../../apis/apiCaller';
@@ -65,6 +67,7 @@ import { Dimens } from '../../constansts/dimension';
 import { dataBottomSheet } from '../../constansts/postDataBottomSheet';
 import { URLs } from '../../constansts/url';
 import { isConstructorDeclaration } from 'typescript';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 
 const PostScreen = () => {
@@ -76,9 +79,9 @@ const PostScreen = () => {
     const [email, setEmail] = useState("");
     const [displayname, setDisplayName] = useState("");
     const [postContent, setPostContent] = useState("");
-    const [photo, setPhoto] = useState("");
     const [response, setResponse] = useState(null);
     const [imageSource, setImageSource] = useState(null);
+    const [pdfSource, setPdfSource] = useState(null);
     const waitPost = useSelector(state => state.post.loadingAddNewPost);
 
     //others
@@ -86,7 +89,7 @@ const PostScreen = () => {
     const sheetRefWatchingScope = React.useRef(null);
     const navigation = useNavigation();
     const dispatch = useDispatch();
-    const waitLoadingTime = 100;
+    const waitLoadingTime = 500;
 
     //-------------------------Effects-----------------------------------
 
@@ -104,10 +107,10 @@ const PostScreen = () => {
     //-------------------------Functions---------------------------------
 
     const clearState = () => {
-        setPhoto("");
         setPostContent("");
         setResponse(null);
         setImageSource(null);
+        setPdfSource(null);
     }
 
     const onOpenImageGallery = () => {
@@ -139,6 +142,58 @@ const PostScreen = () => {
 
     }
 
+    const onPickFile = async () => {
+        try {
+            const res = await DocumentPicker.pick({
+                type: [DocumentPicker.types.pdf],
+            });
+
+            await setPdfSource(res);
+            console.log(
+                res.uri,
+                res.type, // mime type
+                res.name,
+                res.size
+            );
+        } catch (err) {
+            if (DocumentPicker.isCancel(err)) {
+                // User cancelled the picker, exit any dialogs or menus and move on
+            } else {
+                throw err;
+            }
+        }
+    }
+
+    const onPressBottomSheetItem = (lable: string) => {
+        // console.log(lable);
+        switch (lable) {
+            case "Add a pdf file":
+                onPickFile();
+                break;
+
+            case "Take a photo":
+                onOpenCamera();
+                break;
+
+            case "Add a photo":
+                onOpenImageGallery();
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    const onDeletePdfFile = useCallback(() => {
+        setPdfSource(null);
+    }, []);
+
+    const onDeleteImage = useCallback(() => {
+        setResponse(null);
+        setImageSource(null);
+    }, []);
+
     //--------------------------------------------------
     const openBottomSheet = async () => {
         await Keyboard.dismiss();
@@ -156,8 +211,8 @@ const PostScreen = () => {
         sheetRefWatchingScope.current.snapTo(6);
     }
 
-    const onPressBottomSheetItem = (lable: string) => {
-        console.log(lable);
+    const closeBottomSheet = () => {
+        sheetRef.current.snapTo(6);
     }
 
     return (
@@ -176,6 +231,40 @@ const PostScreen = () => {
                 </TouchableOpacity>
             </View>
 
+            <Delayed wait={100}>
+                <BottomSheet
+                    ref={sheetRef}
+                    snapPoints={returnSnapPoints(Dimens.heightScreen, -500)}
+                    initialSnap={6}
+                    enabledInnerScrolling={false}
+                    enabledContentGestureInteraction={false}
+                    renderContent={() =>
+                    (
+                        <BottomSheetList
+                            data={dataBottomSheet}
+                            onPress={onPressBottomSheetItem}
+                            onPressOutside={closeBottomSheet}
+                        ></BottomSheetList>
+                    )}
+                ></BottomSheet>
+            </Delayed>
+
+            <Delayed wait={100}>
+                <BottomSheet
+                    ref={sheetRefWatchingScope}
+                    snapPoints={returnSnapPoints(Dimens.heightScreen, -500)}
+                    initialSnap={6}
+                    enabledInnerScrolling={false}
+                    enabledContentGestureInteraction={false}
+                    renderContent={() =>
+                    (
+                        <WatchingScope
+                            onPressOutside={closeBottomSheetWatchingScope}
+                        ></WatchingScope>
+                    )}
+                ></BottomSheet>
+            </Delayed>
+
             {/* inputContainer  */}
             <Delayed wait={waitLoadingTime}>
                 <View style={{
@@ -188,7 +277,7 @@ const PostScreen = () => {
                     <View style={{ flexDirection: 'row', alignItems: "center" }}>
                         <Image source={require('../../assets/images/locnguyen.jpg')} style={styles.avatar} />
                         <View style={{ flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <Text style={{ fontWeight: '700', fontSize: 15, marginBottom: 5 }}>Vinh Loc Nguyen</Text>
+                            <Text style={{ fontWeight: '700', fontSize: 15, marginBottom: 5 }}>Nguyen Vinh Loc</Text>
 
                             <TouchableOpacity style={tempStyles.ps_watching_scope_btn}
                                 onPress={openBottomSheetWatchingScope}>
@@ -202,25 +291,59 @@ const PostScreen = () => {
 
                     <ScrollView style={{ marginHorizontal: 0 }} showsVerticalScrollIndicator={false}>
                         <TextInput
-                            autoFocus={true}
+                            autoFocus={false}
                             multiline={true}
                             // onFocus={() => { sheetRef.current.snapTo(2) }}
                             numberOfLines={3}
                             onChangeText={text => setPostContent(text)}
                             value={postContent}
-                            style={{ fontSize: 15, backgroundColor: 'transparent' }}
+                            style={{ fontSize: 15, }}
                             placeholder="What do you want to talk about ?"
                         ></TextInput>
 
+
+
+                        {pdfSource && (
+                            <View style={{ height: 120, width: '100%', backgroundColor: '#f2f2f2', padding: 5, borderRadius: 5, marginTop: 20, flexDirection: 'row' }}>
+                                <PDF
+                                    source={{ uri: pdfSource.uri }}
+                                    onLoadComplete={(numberOfPages, filePath) => {
+                                        console.log(`number of pages: ${numberOfPages}`);
+                                    }}
+                                    onPageChanged={(page, numberOfPages) => {
+                                        console.log(`current page: ${page}`);
+                                    }}
+                                    onError={(error) => {
+                                        console.log(error);
+                                    }}
+                                    onPressLink={(uri) => {
+                                        console.log(`Link press: ${uri}`)
+                                    }}
+                                    style={{ height: 110, width: 90 }} />
+                                <Text style={{ marginLeft: 5, fontWeight: 'bold', flex: 1, marginRight: 5 }}>{pdfSource.name}</Text>
+
+                                <TouchableOpacity style={{}} onPress={onDeletePdfFile}>
+                                    <AntDesign name="closecircleo" size={20} color={Colors.Gray} />
+                                </TouchableOpacity>
+                                <Text style={{ position: 'absolute', bottom: 5, right: 5, color: Colors.Gray, fontSize: 10 }}>{(pdfSource.size / (1024 * 1024)).toFixed(2)} MB</Text>
+                            </View>
+
+                        )}
+
                         {response && (
-                            <View style={tempStyles.image}>
+                            <View style={{}}>
                                 <Image
                                     style={{
                                         width: FitImageDimension(response.width, response.height, 'w'),
-                                        height: FitImageDimension(response.width, response.height, 'h')
+                                        height: FitImageDimension(response.width, response.height, 'h'),
+                                        borderRadius: 10
                                     }}
                                     source={{ uri: response.uri }}
                                 />
+                                <View style={{ flex: 1, position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 10 }}></View>
+                                <TouchableOpacity style={{ position: 'absolute', top: 10, right: 10 }} onPress={onDeleteImage}>
+                                    <AntDesign name="closecircleo" size={20} color={Colors.LightGray} />
+                                </TouchableOpacity>
                             </View>
                         )}
 
@@ -255,40 +378,6 @@ const PostScreen = () => {
 
                 </View>
             </Delayed>
-
-
-
-            <Delayed wait={waitLoadingTime}>
-                <BottomSheet
-                    ref={sheetRef}
-                    snapPoints={returnSnapPoints(bottomSheetHeight, -500)}
-                    initialSnap={6}
-                    enabledInnerScrolling={false}
-                    renderContent={() =>
-                        (
-                            <BottomSheetList
-                                data={dataBottomSheet}
-                                onPress={onPressBottomSheetItem}
-                            ></BottomSheetList>
-                        )}
-                ></BottomSheet>
-            </Delayed>
-
-            <Delayed wait={waitLoadingTime}>
-                <BottomSheet
-                    ref={sheetRefWatchingScope}
-                    snapPoints={returnSnapPoints(Dimens.heightScreen, -500)}
-                    initialSnap={6}
-                    enabledInnerScrolling={false}
-                    renderContent={() =>
-                        (
-                            <WatchingScope
-                                onPressOutside={closeBottomSheetWatchingScope}
-                            ></WatchingScope>
-                        )}
-                ></BottomSheet>
-            </Delayed>
-
 
 
 

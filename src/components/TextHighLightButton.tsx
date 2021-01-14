@@ -5,14 +5,14 @@ import { styles } from '../screens/Styles/styles';
 
 const TextHighLightButton = (props) => {
     console.log('render TextHighLightButton');
-    const { onPress, normalText, highLightText, style } = props;
+    const { onPress, normalText, highLightText, style, } = props;
     return (
         <TouchableOpacity
-            style={[{ alignSelf: 'center', marginTop: 32 }, style]}
+            style={[{ alignSelf: 'center', marginTop: 20, }, style]}
             onPress={onPress}
         >
             <Text>
-                {normalText} <Text style={styles.highLightText}>{highLightText}</Text>
+                {normalText} <Text style={{ ...styles.highLightText }}>{highLightText}</Text>
             </Text>
         </TouchableOpacity>
     );

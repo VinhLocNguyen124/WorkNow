@@ -199,7 +199,7 @@ const dataMessage = [
 
 
 const MessageDetailScreen = () => {
-    console.log("render Edit Intro Screen")
+    console.log("render MessageDetailScreen")
 
     //States
     const province = useSelector(state => state.listChoice.province);
@@ -216,7 +216,7 @@ const MessageDetailScreen = () => {
     useEffect(() => {
 
         return () => {
-            console.log("Edit Intro Screen Unmount");
+            console.log("MessageDetailScreen Unmount");
 
         }
     }, []);
@@ -237,11 +237,7 @@ const MessageDetailScreen = () => {
         item => item.id.toString(),
         []
     );
-
-
     //--------------------------------------------------
-
-
     return (
         <View style={styles.container}>
             <View style={{ ...styles.header, justifyContent: 'flex-start', paddingVertical: 5 }}>
@@ -256,7 +252,7 @@ const MessageDetailScreen = () => {
                         numberOfLines={1}
                         ellipsizeMode="tail"
                         style={{ color: Colors.Gray, fontSize: 12 }}
-                    >TechLead at SoftTech Vietnam echLead at SoftTech Vietnam</Text>
+                    >Fresher developer, IkoIOS Hanoi Tech Center</Text>
                 </View>
             </View>
 
@@ -293,13 +289,6 @@ const MessageDetailScreen = () => {
                     <FontAwesome name="send" size={25} color={Colors.MainBlue}></FontAwesome>
                 </TouchableOpacity>
             </View>
-
-            {/* <Delayed wait={1000} noneLoading={false}>
-               
-                   
-            </Delayed> */}
-
-
         </View>
     );
 }

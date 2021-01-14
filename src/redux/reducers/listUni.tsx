@@ -8,7 +8,7 @@ const initialState = {
 const listUniReducer = (state = initialState, action) => {
     switch (action.type) {
 
-        case ActionTypes.SET_LIST_UNI: {
+        case ActionTypes.GET_LIST_UNI: {
             return {
                 ...state,
                 listUni: action.payload,

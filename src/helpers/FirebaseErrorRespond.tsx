@@ -1,4 +1,3 @@
-import { call } from "react-native-reanimated";
 
 const FirebaseErrorRespond = (errorCode: String, callback: Function) => {
     switch (errorCode) {
@@ -39,7 +38,7 @@ const FirebaseErrorRespond = (errorCode: String, callback: Function) => {
         //     break;
 
         default:
-            callback("Lỗi lạ !")
+            callback("Mất kết nối, vui lòng thử lại thao tác !", errorCode)
             break;
     }
 };
