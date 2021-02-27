@@ -36,6 +36,9 @@ import RequirementScreen from './src/screens/RequirementScreen/index';
 import ListMatchedJobScreen from './src/screens/ListMatchedJobScreen/index';
 import JobDetailScreen from './src/screens/JobDetailScreen/index';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen/index';
+import GeneralProfileScreen from './src/screens/GeneralProfileScreen/index';
+import ListRequestScreen from './src/screens/ListRequestScreen/index';
+import PostDetailScreen from './src/screens/PostDetailScreen/index';
 
 //navigation packages
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
@@ -262,6 +265,21 @@ const App = () => {
           }}
         ></Stack.Screen>
         <Stack.Screen name="JobDetail" component={JobDetailScreen}
+          options={{
+            headerShown: false,
+          }}
+        ></Stack.Screen>
+        <Stack.Screen name="GeneralProfile" component={GeneralProfileScreen}
+          options={{
+            headerShown: false,
+          }}
+        ></Stack.Screen>
+        <Stack.Screen name="ListRequest" component={ListRequestScreen}
+          options={{
+            headerShown: false,
+          }}
+        ></Stack.Screen>
+        <Stack.Screen name="PostDetail" component={PostDetailScreen}
           options={{
             headerShown: false,
           }}

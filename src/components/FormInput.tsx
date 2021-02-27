@@ -5,7 +5,7 @@ import { styles } from '../screens/Styles/styles';
 
 const FormInput = (props) => {
     console.log('render FormInput')
-    const { title, onChangeText, value, style } = props;
+    const { title, onChangeText, value, style, contentType, onFocus } = props;
     return (
         <View style={style}>
             <Text style={styles.inputTitle}>{title}</Text>
@@ -14,6 +14,8 @@ const FormInput = (props) => {
                 autoCapitalize="none"
                 onChangeText={onChangeText}
                 value={value}
+                onFocus={onFocus}
+                textContentType={contentType}
             ></TextInput>
         </View>
     );
@@ -28,9 +30,11 @@ const areEqual = (prevProps, nextProps) => {
 
 FormInput.propTypes = {
     onChangeText: PropTypes.func,
+    onFocus: PropTypes.func,
     title: PropTypes.string,
     value: PropTypes.string,
     style: PropTypes.object,
+    contentType: PropTypes.string,
 };
 
 FormInput.defaultProps = {

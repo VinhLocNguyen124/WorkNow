@@ -34,7 +34,6 @@ export const styles = StyleSheet.create({
         backgroundColor: Colors.MainBlue,
         borderRadius: 10,
         padding: 10,
-        elevation: 5,
         marginTop: 25,
     },
     textStyle: {

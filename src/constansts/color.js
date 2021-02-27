@@ -8,4 +8,5 @@ export const Colors = {
     DarkTurquoise: 'rgba(0, 206, 209, 1.0)',
     Cyan: 'rgba(0,255,255, 1.0)',
     LightSkyBlue: 'rgba(135,206,250, 1.0)',
+    Emeral: '#1dcf70'
 }

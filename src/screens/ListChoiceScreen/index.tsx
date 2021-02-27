@@ -131,8 +131,6 @@ const ListChoiceScreen = () => {
                     keyExtractor={keyExtractor}
                 ></FlatList>
             }
-
-
         </View>
     );
 }

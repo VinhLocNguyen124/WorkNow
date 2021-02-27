@@ -28,20 +28,31 @@ import { useNavigation } from '@react-navigation/native';
 import { setI18nConfig, translate } from '../../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
 
+//redux
+import { useDispatch, useSelector } from 'react-redux';
+
 //Components
 import ExtendButton from './ExtendButton';
 import ItemHeader from './ItemHeader';
 import ItemBackground from './ItemBackground';
+import EducationItem from '../../BackgroundScreen/components/EducationItem';
+import ExperienceItem from '../../BackgroundScreen/components/ExperienceItem';
 
-//Consts
+//consts
 import { Colors } from '../../../constansts/color';
 import { Dimens } from '../../../constansts/dimension';
 
 const iconHeader = <FontAwesome name="pencil" size={20} color={'black'}></FontAwesome>
-
 const Background = (props) => {
+    //Props
     const { onPress } = props;
 
+    //States
+    const globalUser = useSelector(state => state.globalUser.globalUser);
+
+    //Others
+
+    //-------------------------------------------------------------------------------------
     return (
         <View style={{
             flexDirection: 'column',
@@ -53,21 +64,28 @@ const Background = (props) => {
         }}>
 
             <ItemHeader title="Experience" onPress={onPress} icon={iconHeader}></ItemHeader>
-            <ItemBackground
-                major="Mobile Application Developer"
-                company="Ba Ria Vung Tau University"
-                position="Freelance"
-            ></ItemBackground>
-
+            {globalUser.companies.length === 0 ?
+                null
+                :
+                <ExperienceItem
+                    major={globalUser.companies[0].major}
+                    companyname={globalUser.companies[0].companyname}
+                    position={globalUser.companies[0].position}
+                    expyear={globalUser.companies[0].expyear}
+                ></ExperienceItem>
+            }
 
 
             <ItemHeader title="Education" onPress={onPress} icon={iconHeader}></ItemHeader>
-            <ItemBackground
-                major="Mobile Application Developer"
-                company="Ba Ria Vung Tau University"
-                position="Freelance"
-            ></ItemBackground>
-
+            {globalUser.schools.length === 0 ?
+                null
+                :
+                <EducationItem
+                    schoolname={globalUser.schools[0].schoolname}
+                    major={globalUser.schools[0].major}
+                    schoolyaer={globalUser.schools[0].schoolyear}
+                ></EducationItem>
+            }
             <ExtendButton title="See all" onPress={onPress}></ExtendButton>
 
         </View>

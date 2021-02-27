@@ -26,6 +26,7 @@ import { setDefaultSkill, onSortDefaultSkill, onAddSkill, onAddDefaultSkill } fr
 
 //Components
 import Delayed from './../../../components/Delayed';
+import { Item } from "native-base";
 
 const AddSkillModal = (props) => {
     //Props
@@ -36,17 +37,18 @@ const AddSkillModal = (props) => {
     const [showInputAdd, setShowInputAdd] = useState(false);
     const [otherSkillName, setOtherSkillName] = useState('');
     const listDefaultSkill = useSelector(state => state.listSkill.listSkillDefault);
-    const rootDefaultSkill = useSelector(state => state.listSkill.rootDefaultSkill);
-    const listSkill = useSelector(state => state.listSkill.listSkill);
+    const addSkillLoading = useSelector(state => state.listSkill.addSkillLoading);
+    const globalUser = useSelector(state => state.globalUser.globalUser);
+
 
     //Others
     const dispatch = useDispatch();
 
     //------------------------Effects-----------------------------
     useEffect(() => {
-        if (rootDefaultSkill.length === 0) {
-            dispatch(setDefaultSkill());
-        }
+
+        dispatch(setDefaultSkill());
+
         return () => {
 
         }
@@ -55,18 +57,30 @@ const AddSkillModal = (props) => {
 
     //------------------------Functions---------------------------
 
+    const onShow = () => {
+
+    }
+
+    const addSkill = (item) => {
+        const userskill = {
+            iduser: globalUser._id,
+            idskill: item._id,
+            name: item.name,
+            bestskill: false
+        }
+        dispatch(onAddSkill(userskill, globalUser.email));
+
+    }
+
     const _renderItem = useCallback(
         ({ item }) => (
-            <Text key={item.id} style={{
+            <Text key={item._id} style={{
                 borderBottomColor: Colors.LightGray,
                 borderBottomWidth: 1,
                 paddingVertical: 12,
                 width: '100%'
             }}
-                onPress={() => {
-                    console.log(item);
-                    dispatch(onAddSkill(item))
-                }}
+                onPress={() => addSkill(item)}
             >{item.name}</Text>
         )
         ,
@@ -74,7 +88,7 @@ const AddSkillModal = (props) => {
     );
 
     const keyExtractor = useCallback(
-        item => item.id.toString(),
+        item => item._id,
         []
     );
 
@@ -184,13 +198,20 @@ const AddSkillModal = (props) => {
                         <Ionicons name="close-circle-outline" size={30} color={Colors.Gray}></Ionicons>
                     </TouchableOpacity>
 
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         onPress={() => setShowInputAdd(!showInputAdd)}
                         style={{ position: 'absolute', top: 10, left: 10 }}
                     >
                         <AntDesign name="plussquareo" size={30} color={Colors.MainBlue}></AntDesign>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
+                    {addSkillLoading ?
+                        <ActivityIndicator
+                            size="small"
+                            color={Colors.DarkTurquoise}
+                            style={{ position: 'absolute', top: 10, left: 10 }}
+                        ></ActivityIndicator> : null
+                    }
                 </View>
 
             </View>

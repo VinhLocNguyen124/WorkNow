@@ -1,6 +1,6 @@
 import { URLs } from '../constansts/url';
 
-const fetchData = async (endpoint: string = '', type: 'GET' | 'POST' | 'PUT' | 'DELETE', data = {}) => {
+const fetchData = async (endpoint: string = '', type: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH', data = {}) => {
     // Default options are marked with *
     try {
         const response = await fetch(URLs.URL_SERVER_DEFAULT + endpoint, {

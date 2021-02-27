@@ -9,6 +9,7 @@ import {
     Button,
     TextInput,
     Dimensions,
+    Switch,
     StyleSheet,
 } from 'react-native';
 
@@ -20,7 +21,7 @@ import { setI18nConfig, translate } from '../../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
 
 //Components
-import { Radio, Switch } from 'native-base';
+import { Radio } from 'native-base';
 
 //Consts
 import { Colors } from '../../../constansts/color';
@@ -30,7 +31,7 @@ import { styles } from '../../Styles/styles';
 const height = Dimensions.get('window').height;
 
 const WatchingScope = (props) => {
-    const { onPressOutside, } = props;
+    const { onPressOutside, onChangeAllowCmt, allowCmt, seeScope, onChangeSeeScope, } = props;
 
     useEffect(() => {
 
@@ -65,8 +66,9 @@ const WatchingScope = (props) => {
 
                     <Radio
                         color={Colors.Gray}
-                        selectedColor={"#018175"}
-                        selected={true} />
+                        selectedColor={Colors.MainBlue}
+                        onPress={() => onChangeSeeScope("anyone")}
+                        selected={seeScope === "anyone" ? true : false} />
                 </View>
 
                 <View style={tempStyles.ws_view1}>
@@ -80,8 +82,9 @@ const WatchingScope = (props) => {
 
                     <Radio
                         color={Colors.Gray}
-                        selectedColor={"#018175"}
-                        selected={false} />
+                        selectedColor={Colors.MainBlue}
+                        onPress={() => onChangeSeeScope("connection")}
+                        selected={seeScope === "connection" ? true : false} />
                 </View>
 
                 <View style={tempStyles.ws_view3}>
@@ -91,7 +94,11 @@ const WatchingScope = (props) => {
                     </View>
                     <Switch
 
-                        value={true} />
+                        trackColor={{ false: "#767577", true: "#81b0ff6E" }}
+                        thumbColor={allowCmt ? Colors.MainBlue : "#f4f3f4"}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={() => onChangeAllowCmt(!allowCmt)}
+                        value={allowCmt} />
                 </View>
 
             </View>
@@ -147,6 +154,10 @@ export const tempStyles = StyleSheet.create({
 
 WatchingScope.propTypes = ({
     onPressOutside: PropTypes.func,
+    allowCmt: PropTypes.bool,
+    onChangeAllowCmt: PropTypes.func,
+    onChangeSeeScope: PropTypes.func,
+    seeScope: PropTypes.string
 });
 
 WatchingScope.defaultProps = ({

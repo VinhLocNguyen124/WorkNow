@@ -2,22 +2,9 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View,
     Text,
-    SafeAreaView,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    Image,
-    Button,
     TextInput,
-    KeyboardAvoidingView,
-    Keyboard,
-    Dimensions,
     StyleSheet,
-    LayoutAnimation,
-    ScrollView,
-    Alert,
     FlatList,
-    ToastAndroid,
-    ActivityIndicator,
 } from 'react-native';
 import Animated from 'react-native-reanimated';
 

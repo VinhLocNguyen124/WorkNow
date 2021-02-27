@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     View,
     Text,
@@ -32,6 +32,7 @@ import { useSelector, useDispatch } from 'react-redux';
 //helpers
 import { setI18nConfig, translate } from '../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
+import { randomCoverImage } from '../../helpers/randomCoverImage';
 
 //Components
 import HorizontalBarChart from './components/HorizontalBarChart';
@@ -50,10 +51,24 @@ const marginStandart = 10;
 
 const ProfileScreen = () => {
     //State
-    const navigation = useNavigation();
+    const globalUser = useSelector(state => state.globalUser.globalUser);
+
+    //notsure
     const listSkill = useSelector(state => state.listSkill.listSkill)
 
     //Others
+    const navigation = useNavigation();
+
+    //------------------------------------Effects-------------------------------------
+    useEffect(() => {
+        console.log(globalUser);
+
+        return () => {
+
+        }
+    }, []);
+
+    //------------------------------------Functions-----------------------------------
 
     return (
         <View style={[styles.container, { backgroundColor: 'transparent' }]}>
@@ -61,20 +76,38 @@ const ProfileScreen = () => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {/* Personal Info  */}
                     <View style={{ flexDirection: 'column', backgroundColor: 'white', paddingBottom: 10, }}>
-                        <Image source={require('../../assets/images/billgate.jpeg')} style={{ height: 100, width: '100%' }} ></Image>
-                        <TouchableOpacity style={{ alignSelf: 'flex-end', padding: marginStandart }} onPress={() => navigation.navigate('EditIntro')}>
-                            <FontAwesome name="pencil" size={20} color={'black'}></FontAwesome>
-                        </TouchableOpacity>
-                        <View style={{ flexDirection: 'column', margin: marginStandart, }}>
-                            <Text style={styles.headerTitle}>Nguyen Vinh Loc</Text>
-                            <Text style={styles.textNormal}>Student at Ba Ria Vung Tau University</Text>
-                            <Text style={styles.textNormal}>Vung Tau, Ba Ria-Vung Tau, Viet Nam</Text>
-                            <Text style={styles.textNormal}>0 connections</Text>
+                        <Image source={{ uri: randomCoverImage() }} style={{ height: 100, width: '100%' }} ></Image>
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+
+                            <TouchableOpacity style={{
+                                alignSelf: 'flex-end', padding: marginStandart,
+                                backgroundColor: Colors.DarkTurquoise, margin: 10,
+                                paddingHorizontal: 40, borderRadius: 5, elevation: 5
+                            }} onPress={() => navigation.navigate('ListRequest')}>
+                                <Text style={{ fontWeight: 'bold', color: 'white' }}>requests</Text>
+
+                                {globalUser.requests.length > 0 ?
+                                    <View style={{
+                                        height: 10, width: 10, backgroundColor: 'red',
+                                        position: 'absolute', top: 0, left: 0, borderRadius: 20, borderWidth: 1, borderColor: 'white'
+                                    }}></View> : null
+                                }
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{ padding: marginStandart }} onPress={() => navigation.navigate('EditIntro')}>
+                                <FontAwesome name="pencil" size={20} color={'black'}></FontAwesome>
+                            </TouchableOpacity>
                         </View>
 
-                        <Image
-                            source={require('../../assets/images/locnguyen.jpg')}
-                            style={{
+                        <View style={{ flexDirection: 'column', marginLeft: marginStandart, }}>
+                            <Text style={styles.headerTitle}>{globalUser.username}</Text>
+                            {globalUser.headline === "" ? null : <Text style={styles.textNormal}>{globalUser.headline}</Text>}
+                            {globalUser.province === "" || globalUser.city === "" ? null : <Text style={styles.textNormal}>{globalUser.city + ", " + globalUser.province}</Text>}
+
+                        </View>
+                        {globalUser.urlavatar === "" ?
+                            <View style={{
                                 height: 100,
                                 width: 100,
                                 borderRadius: 50,
@@ -82,9 +115,28 @@ const ProfileScreen = () => {
                                 borderColor: 'white',
                                 position: 'absolute',
                                 top: 50,
-                                left: 20
-                            }}
-                        ></Image>
+                                left: 20,
+                                backgroundColor: 'white',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                                <FontAwesome5 name="user-check" size={45} color={Colors.Gray}></FontAwesome5>
+                            </View>
+                            :
+                            <Image
+                                source={{ uri: globalUser.urlavatar }}
+                                style={{
+                                    height: 100,
+                                    width: 100,
+                                    borderRadius: 50,
+                                    borderWidth: 5,
+                                    borderColor: 'white',
+                                    position: 'absolute',
+                                    top: 50,
+                                    left: 20
+                                }}
+                            ></Image>
+                        }
 
                         <View style={{
                             height: 20, width: 20, borderRadius: 10,
@@ -100,7 +152,7 @@ const ProfileScreen = () => {
                     <JobFinder></JobFinder>
 
                     {/* Profile strength */}
-                    <HorizontalBarChart point={39}></HorizontalBarChart>
+                    <HorizontalBarChart point={globalUser.point}></HorizontalBarChart>
 
                     {/* Short timeline  */}
                     <ShortTimeline
@@ -116,7 +168,7 @@ const ProfileScreen = () => {
                     {/* List Skills */}
                     <ListSkill
                         onPress={() => navigation.navigate("ListSkill")}
-                        listSkill={listSkill}
+                        listSkill={globalUser.skills}
                     ></ListSkill>
 
                     {/* Contact */}

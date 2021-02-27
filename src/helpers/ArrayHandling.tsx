@@ -37,4 +37,20 @@ const checkExistingItemInArray = (listSkill, skill) => {
     }
 }
 
-export { returnExpectSkillArray, checkExistingItemInArray, returnExpectUniArray }
+const filterBestSkill = (arrSkill) => {
+    let array = [];
+    array = arrSkill.filter((skill) => {
+        return skill.important === true;
+    });
+    return array;
+}
+
+const filterSubSkill = (arrSkill) => {
+    let array = [];
+    array = arrSkill.filter((skill) => {
+        return skill.important === false;
+    });
+    return array;
+}
+
+export { returnExpectSkillArray, checkExistingItemInArray, returnExpectUniArray, filterBestSkill, filterSubSkill }

@@ -28,6 +28,7 @@ import * as RNLocalize from 'react-native-localize';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
+import { createNewUser } from '../../redux/actions/globalUser';
 import { saveAccount } from '../../redux/actions/login';
 
 //Components
@@ -81,16 +82,28 @@ const RegisterScreen = () => {
 
         if (email === "" || password === "" || name === "") {
             FirebaseErrorRespond("empty fields", (mess) => setErrorMessage(mess));
+            setWaitingRegister(false);
         } else {
             auth()
                 .createUserWithEmailAndPassword(email, password)
                 .then(userCredentials => {
-
                     setWaitingRegister(false);
                     if (checkSaveAccount) {
                         dispatch(saveAccount(email, password, true));
                     }
-
+                    const user = {
+                        username: name,
+                        email: email,
+                        urlavatar: "",
+                        phone: "",
+                        province: "",
+                        city: "",
+                        qrcode: "",
+                        headline: "",
+                        underwork: true,
+                        path: "",
+                    }
+                    dispatch(createNewUser(user));
                     return userCredentials.user.updateProfile({
                         displayName: name
                     });

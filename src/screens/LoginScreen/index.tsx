@@ -90,7 +90,6 @@ const LoginScreen = () => {
     const handleLogin = () => {
         Keyboard.dismiss();
         setWaitingLogin(true);
-
         if (email === "" || password === "") {
             setWaitingLogin(false);
             FirebaseErrorRespond("empty fields", (mess) => setErrorMessage(mess));
@@ -100,6 +99,8 @@ const LoginScreen = () => {
                     setWaitingLogin(false);
                     if (checkSaveAccount) {
                         dispatch(saveAccount(email, password, checkSaveAccount));
+                    } else {
+                        dispatch(saveAccount("", "", false));
                     }
                 })
                 .catch(error => {
@@ -151,6 +152,7 @@ const LoginScreen = () => {
                         title={translate('Email Address')}
                         onChangeText={email => setEmail(email)}
                         value={email}
+                        contentType={"emailAddress"}
                     />
 
                     <View style={{ marginVertical: 20, }}>

@@ -29,6 +29,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //Navigation
 import { useNavigation } from '@react-navigation/native';
@@ -40,7 +41,7 @@ import { FitImageDimension } from '../../helpers/FitImageDimension';
 import {
     onLaunchImageGallery,
     onLaunchCamera,
-    cloudinaryUploadImage
+    onPickFile
 } from '../../helpers/MediaConfig';
 import { returnSnapPoints } from '../../helpers/UIHandling';
 import DocumentPicker from 'react-native-document-picker';
@@ -76,12 +77,19 @@ const PostScreen = () => {
     const bottomSheetHeight = (dataBottomSheet.length + 2) * 40;
 
     //States
+    const globalUser = useSelector(state => state.globalUser.globalUser);
     const [email, setEmail] = useState("");
     const [displayname, setDisplayName] = useState("");
     const [postContent, setPostContent] = useState("");
+    const [allowCmt, setAllowCmt] = useState(true);
+    const [seeScope, setSeeScope] = useState("anyone");
+
+
     const [response, setResponse] = useState(null);
     const [imageSource, setImageSource] = useState(null);
     const [pdfSource, setPdfSource] = useState(null);
+    const [pdfResponse, setPdfResponse] = useState(null);
+    const [pdfExpanding, setPdfExpanding] = useState(false);
     const waitPost = useSelector(state => state.post.loadingAddNewPost);
 
     //others
@@ -111,6 +119,7 @@ const PostScreen = () => {
         setResponse(null);
         setImageSource(null);
         setPdfSource(null);
+        setPdfResponse(null);
     }
 
     const onOpenImageGallery = () => {
@@ -124,51 +133,36 @@ const PostScreen = () => {
         onLaunchCamera((source, response) => {
             setResponse(response);
             setImageSource(source);
-        })
+        });
+    }
+
+    const onOpenMediaStorage = () => {
+        onPickFile((source, response) => {
+            setPdfSource(source);
+            setPdfResponse(response);
+        });
     }
 
     const onPressPostContent = () => {
-
         const post = {
             emailuser: email,
             idpostshare: "",
             content: postContent,
             imgurl: "",
-            seescope: "anyone",
-            allowcmt: "yes"
+            pdfurl: "",
+            seescope: seeScope,
+            allowcmt: allowCmt,
+            formal: false,
+            active: true
         }
-
-        dispatch(addNewPost(post, imageSource, navigation));
-
-    }
-
-    const onPickFile = async () => {
-        try {
-            const res = await DocumentPicker.pick({
-                type: [DocumentPicker.types.pdf],
-            });
-
-            await setPdfSource(res);
-            console.log(
-                res.uri,
-                res.type, // mime type
-                res.name,
-                res.size
-            );
-        } catch (err) {
-            if (DocumentPicker.isCancel(err)) {
-                // User cancelled the picker, exit any dialogs or menus and move on
-            } else {
-                throw err;
-            }
-        }
+        dispatch(addNewPost(post, imageSource, pdfSource, navigation, globalUser.email));
     }
 
     const onPressBottomSheetItem = (lable: string) => {
         // console.log(lable);
         switch (lable) {
             case "Add a pdf file":
-                onPickFile();
+                onOpenMediaStorage();
                 break;
 
             case "Take a photo":
@@ -202,9 +196,7 @@ const PostScreen = () => {
 
     const openBottomSheetWatchingScope = async () => {
         await Keyboard.dismiss();
-
         await sheetRefWatchingScope.current.snapTo(0);
-
     }
 
     const closeBottomSheetWatchingScope = () => {
@@ -260,6 +252,10 @@ const PostScreen = () => {
                     (
                         <WatchingScope
                             onPressOutside={closeBottomSheetWatchingScope}
+                            allowCmt={allowCmt}
+                            onChangeAllowCmt={value => setAllowCmt(value)}
+                            seeScope={seeScope}
+                            onChangeSeeScope={value => setSeeScope(value)}
                         ></WatchingScope>
                     )}
                 ></BottomSheet>
@@ -275,9 +271,9 @@ const PostScreen = () => {
                 }}>
 
                     <View style={{ flexDirection: 'row', alignItems: "center" }}>
-                        <Image source={require('../../assets/images/locnguyen.jpg')} style={styles.avatar} />
+                        <Image source={{ uri: globalUser.urlavatar }} style={styles.avatar} />
                         <View style={{ flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <Text style={{ fontWeight: '700', fontSize: 15, marginBottom: 5 }}>Nguyen Vinh Loc</Text>
+                            <Text style={{ fontWeight: '700', fontSize: 15, marginBottom: 5 }}>{globalUser.username}</Text>
 
                             <TouchableOpacity style={tempStyles.ps_watching_scope_btn}
                                 onPress={openBottomSheetWatchingScope}>
@@ -301,12 +297,10 @@ const PostScreen = () => {
                             placeholder="What do you want to talk about ?"
                         ></TextInput>
 
-
-
-                        {pdfSource && (
-                            <View style={{ height: 120, width: '100%', backgroundColor: '#f2f2f2', padding: 5, borderRadius: 5, marginTop: 20, flexDirection: 'row' }}>
+                        {pdfResponse && (
+                            <View style={{ height: pdfExpanding ? 400 : 120, width: '100%', backgroundColor: '#f2f2f2', padding: 5, borderRadius: 5, marginTop: 20, flexDirection: 'row' }}>
                                 <PDF
-                                    source={{ uri: pdfSource.uri }}
+                                    source={{ uri: pdfResponse.uri }}
                                     onLoadComplete={(numberOfPages, filePath) => {
                                         console.log(`number of pages: ${numberOfPages}`);
                                     }}
@@ -319,19 +313,32 @@ const PostScreen = () => {
                                     onPressLink={(uri) => {
                                         console.log(`Link press: ${uri}`)
                                     }}
-                                    style={{ height: 110, width: 90 }} />
-                                <Text style={{ marginLeft: 5, fontWeight: 'bold', flex: 1, marginRight: 5 }}>{pdfSource.name}</Text>
+                                    style={{ height: pdfExpanding ? 390 : 110, width: pdfExpanding ? 280 : 90 }} />
+
+
+                                <Text style={{ marginLeft: 5, fontWeight: 'bold', flex: 1, marginRight: 5, color: pdfExpanding ? 'transparent' : 'black' }}>{pdfResponse.name}</Text>
+
+
 
                                 <TouchableOpacity style={{}} onPress={onDeletePdfFile}>
                                     <AntDesign name="closecircleo" size={20} color={Colors.Gray} />
                                 </TouchableOpacity>
-                                <Text style={{ position: 'absolute', bottom: 5, right: 5, color: Colors.Gray, fontSize: 10 }}>{(pdfSource.size / (1024 * 1024)).toFixed(2)} MB</Text>
+
+                                <TouchableOpacity style={{ position: 'absolute', bottom: 5, left: pdfExpanding ? 290 : 95 }} onPress={() => setPdfExpanding(!pdfExpanding)}>
+                                    {pdfExpanding ?
+                                        <MaterialCommunityIcons name="arrow-collapse-all" size={20} color={Colors.Gray} />
+                                        :
+                                        <MaterialCommunityIcons name="arrow-expand-all" size={20} color={Colors.Gray} />
+                                    }
+                                </TouchableOpacity>
+
+                                <Text style={{ position: 'absolute', bottom: 5, right: 5, color: Colors.Gray, fontSize: 10 }}>{(pdfResponse.size / (1024 * 1024)).toFixed(2)} MB</Text>
                             </View>
 
                         )}
 
                         {response && (
-                            <View style={{}}>
+                            <View style={{ marginTop: 10 }}>
                                 <Image
                                     style={{
                                         width: FitImageDimension(response.width, response.height, 'w'),

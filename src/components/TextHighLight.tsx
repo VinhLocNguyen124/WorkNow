@@ -5,13 +5,15 @@ import {
 import PropTypes from 'prop-types';
 
 const TextHighLight = (props) => {
-    const { mainText, subText, colorMT, colorST, fontWeightMT, fontWeightST, fontSizeMT, fontSizeST } = props;
+    const { mainText, subText, colorMT, colorST, fontWeightMT, fontWeightST, fontSizeMT, fontSizeST, onPress } = props;
     return (
-        <Text style={{
-            fontWeight: fontWeightST,
-            color: colorST,
-            fontSize: fontSizeST
-        }}
+        <Text
+            onPress={onPress}
+            style={{
+                fontWeight: fontWeightST,
+                color: colorST,
+                fontSize: fontSizeST
+            }}
         ><Text style={{
             fontWeight: fontWeightMT,
             color: colorMT,
@@ -29,6 +31,7 @@ TextHighLight.propTypes = ({
     fontWeightST: PropTypes.string,
     fontSizeMT: PropTypes.number,
     fontSizeST: PropTypes.number,
+    onPress: PropTypes.func,
 });
 
 TextHighLight.defaultProps = ({

@@ -8,7 +8,6 @@ const initialState = {
 
 const loginReducer = (state = initialState, action) => {
     switch (action.type) {
-
         case ActionTypes.SAVE_ACCOUNT: {
             return {
                 ...state,
@@ -18,8 +17,6 @@ const loginReducer = (state = initialState, action) => {
             }
             break;
         }
-
-
         default:
             return state;
     }

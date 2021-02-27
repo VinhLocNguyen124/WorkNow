@@ -75,7 +75,6 @@ const ForgotPasswordScreen = () => {
     const onSendConfirmCodeViaEmail = () => {
         Keyboard.dismiss();
         setWaiting(true);
-
         if (email === "") {
             setWaiting(false);
             FirebaseErrorRespond("empty fields", (mess) => setErrorMessage(mess));

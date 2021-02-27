@@ -5,6 +5,7 @@ import {
     TouchableOpacity,
     Image,
     TextInput,
+    Modal,
     StyleSheet,
     FlatList,
     ActivityIndicator,
@@ -26,8 +27,8 @@ import * as RNLocalize from 'react-native-localize';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     getListPost,
-
 } from '../../redux/actions/post';
+import { getUserAndSetToGobal } from '../../redux/actions/globalUser';
 
 //hooks
 
@@ -41,12 +42,13 @@ import { URLs } from '../../constansts/url';
 import { fetchData, getData } from '../../apis/apiCaller';
 
 const HomeScreen = () => {
+    const { email, displayName } = auth().currentUser;
+
     //States
-    const [email, setEmail] = useState("");
-    const [displayname, setDisplayName] = useState("");
+    // const [email, setEmail] = useState("");
+    // const [displayname, setDisplayName] = useState("");
     const screenLoading = useSelector(state => state.post.loading);
     const postData = useSelector(state => state.post.listPost);
-
 
     //Others
     const dispatch = useDispatch();
@@ -54,22 +56,18 @@ const HomeScreen = () => {
 
     //-----------------------Effects-----------------------------------
     useEffect(() => {
-        const { email, displayName } = auth().currentUser;
-        setEmail(email);
-        setDisplayName(displayName);
-    }, []);
 
-    useEffect(() => {
-        dispatch(getListPost());
-        return () => {
+        dispatch(getUserAndSetToGobal(email));
+        dispatch(getListPost(email));
+        // setEmail(email);
+        // setDisplayName(displayName);
 
-        }
     }, []);
 
     //-----------------------Functions---------------------------------
 
     const refreshListPost = () => {
-        dispatch(getListPost());
+        dispatch(getListPost(email));
     }
 
     const signOutUser = () => {
@@ -79,12 +77,18 @@ const HomeScreen = () => {
     const renderItem = useCallback(
         ({ item }) => <PostItem
             key={item._id}
-            seq={item._id}
+            _id={item._id}
+            emailuser={item.emailuser}
             imgurl={item.imgurl}
+            pdfurl={item.pdfurl}
             textcontent={item.content}
             date={item.date}
             seescope={item.seescope}
             allowcmt={item.allowcmt}
+            urlavatar={item.urlavatar}
+            username={item.username}
+            headline={item.headline}
+            liked={item.liked}
         ></PostItem>
         ,
         []
@@ -134,6 +138,7 @@ const HomeScreen = () => {
                     onRefresh={refreshListPost}
                     refreshing={screenLoading}
                 ></FlatList>
+
             }
         </View>
     );

@@ -1,6 +1,8 @@
 import * as ImagePicker from 'react-native-image-picker';
 import { Permission, PERMISSION_TYPE } from '../helpers/AppPermission';
 import { URLs } from '../constansts/url';
+import DocumentPicker from 'react-native-document-picker';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const onLaunchImageGallery = (callback) => {
     Permission.checkPermission(PERMISSION_TYPE.photo).then(boolean => {
@@ -8,8 +10,8 @@ const onLaunchImageGallery = (callback) => {
             ImagePicker.launchImageLibrary({
                 mediaType: 'photo',
                 includeBase64: false,
-                maxHeight: 600,
-                maxWidth: 600,
+                maxHeight: 800,
+                maxWidth: 800,
             }, (response) => {
                 if (response.didCancel) {
                     console.log('User cancelled image picker');
@@ -21,12 +23,12 @@ const onLaunchImageGallery = (callback) => {
                         type: response.type,
                         name: response.fileName
                     }
+                    console.log(response.uri)
                     callback(source, response);
                 }
             });
         }
     });
-
 }
 
 const onLaunchCamera = (callback) => {
@@ -36,8 +38,8 @@ const onLaunchCamera = (callback) => {
                 {
                     mediaType: 'photo',
                     includeBase64: false,
-                    maxHeight: 600,
-                    maxWidth: 600,
+                    maxHeight: 800,
+                    maxWidth: 800,
                 },
                 (response) => {
                     if (response.didCancel) {
@@ -50,15 +52,42 @@ const onLaunchCamera = (callback) => {
                             type: response.type,
                             name: response.fileName
                         }
+                        console.log(response.uri)
                         callback(source, response);
                     }
                 },
             )
         }
     })
+}
+
+const onPickFile = (callback) => {
+    Permission.checkPermission(PERMISSION_TYPE.photo).then(boolean => {
+        if (boolean) {
+            try {
+                DocumentPicker.pick({
+                    type: [DocumentPicker.types.pdf],
+                }).then(response => {
+                    const source = {
+                        uri: response.uri,
+                        type: response.type,
+                        name: response.name
+                    }
+                    console.log(response);
+                    callback(source, response);
+                })
 
 
+            } catch (err) {
+                if (DocumentPicker.isCancel(err)) {
+                    // User cancelled the picker, exit any dialogs or menus and move on
+                } else {
+                    throw err;
+                }
+            }
 
+        }
+    });
 }
 
 const cloudinaryUploadImage = async (photo) => {
@@ -79,4 +108,4 @@ const cloudinaryUploadImage = async (photo) => {
     }
 }
 
-export { onLaunchImageGallery, onLaunchCamera, cloudinaryUploadImage }
+export { onLaunchImageGallery, onLaunchCamera, cloudinaryUploadImage, onPickFile }

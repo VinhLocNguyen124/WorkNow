@@ -5,6 +5,11 @@ import listSkillReducer from './listSkill';
 import listUniReducer from './listUni';
 import listMatchedJobReducer from './listMatchedJob';
 import loginReducer from './login';
+import globalUserReducer from './globalUser';
+import companyReducer from './company';
+import generalUserReducer from './generalUser';
+import requestReducer from './request';
+import requirementReducer from './requirement';
 
 const rootReducer = combineReducers({
     post: postReducer,
@@ -13,6 +18,11 @@ const rootReducer = combineReducers({
     listUni: listUniReducer,
     listMatchedJob: listMatchedJobReducer,
     login: loginReducer,
+    globalUser: globalUserReducer,
+    company: companyReducer,
+    generalUser: generalUserReducer,
+    request: requestReducer,
+    requirement: requirementReducer
 });
 
 export default rootReducer;

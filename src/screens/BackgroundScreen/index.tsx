@@ -19,6 +19,9 @@ import { FirebaseErrorRespond } from '../../helpers/FirebaseErrorRespond';
 import { styles } from '../Styles/styles';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
+//redux 
+import { useSelector, useDispatch } from 'react-redux';
+
 //Navigation
 import { useNavigation } from '@react-navigation/native';
 
@@ -31,53 +34,43 @@ import Footer from '../../components/Footer';
 import Delayed from '../../components/Delayed';
 import Header from '../../components/Header';
 import ItemHeader from '../ProfileScreen/components/ItemHeader';
-import ItemBackground from '../ProfileScreen/components/ItemBackground';
+import EducationItem from './components/EducationItem';
+import ExperienceItem from './components/ExperienceItem';
 import AddExpModal from './components/AddExpModal';
 import AddEduModal from './components/AddEduModal';
-import EditModal from './components/EditModal';
+import EditExpModal from './components/EditExpModal';
+import EditEduModal from './components/EditEduModal';
 
 //Consts
 import { Colors } from '../../constansts/color';
 import { Dimens } from '../../constansts/dimension';
 
 
-const marginStandart = 10;
-
-const dataExp = [
-    {
-        id: 0,
-        major: "Mobile Application Developer",
-        company: "IkoIOS Hanoi Tech Center",
-        position: "Fresher"
-    },
-    {
-        id: 1,
-        major: "Web Application Developer",
-        company: "FraziTech",
-        position: "Intern"
-    },
-]
-
-const dataEdu = [
-    {
-        id: 0,
-        school: "Ba Ria Vung Tau University",
-        major: "Mobile Application and Game Programming",
-        session: "2017 - 2021"
-    },
-
-]
-
 const iconItemHeader = <AntDesign name="plussquareo" size={25} color={Colors.MainBlue}></AntDesign>
-
 
 
 const BackgroundScreen = () => {
     //State
+    const globalUser = useSelector(state => state.globalUser.globalUser);
+
     const [modalExpVisible, setModalExpVisible] = useState(false);
     const [modalEduVisible, setModalEduVisible] = useState(false);
     const [modalEditVisible, setModalEditVisible] = useState(false);
-    const [itemEdit, setItemEdit] = useState(null)
+    const [modalEditEduVisible, setModalEditEduVisible] = useState(false);
+    const [itemExpEdit, setItemExpEdit] = useState({
+        _id: "",
+        companyname: "",
+        position: "",
+        major: "",
+        expyear: ""
+    });
+    const [itemEduEdit, setItemEduEdit] = useState({
+        _id: "",
+        iduser: "",
+        schoolname: "",
+        major: "",
+        schoolyear: "",
+    });
 
     //Others
     const navigation = useNavigation();
@@ -89,27 +82,14 @@ const BackgroundScreen = () => {
     //----------------Functions--------------------
 
     const onEditItem = async (item) => {
-        await setItemEdit(item);
+        await setItemExpEdit(item);
         await setModalEditVisible(true);
     }
 
-    const renderItemExp = dataExp.map((item) => <ItemBackground
-        key={item.id}
-        major={item.major}
-        company={item.company}
-        position={"Position: " + item.position}
-        onPress={() => onEditItem(item)}
-    ></ItemBackground>
-    );
-
-    const renderItemEdu = dataEdu.map((item) => <ItemBackground
-        key={item.id}
-        major={item.school}
-        company={item.major}
-        position={item.session}
-        onPress={() => onEditItem(item)}
-    ></ItemBackground>
-    );
+    const onEditEduItem = async (item) => {
+        await setItemEduEdit(item);
+        await setModalEditVisible(true);
+    }
 
     return (
         <View style={[styles.container, { backgroundColor: 'white' }]}>
@@ -118,43 +98,80 @@ const BackgroundScreen = () => {
             ></Header>
 
             <Delayed wait={500} noneLoading={false}>
+
                 <ScrollView style={{ flex: 1, padding: 10 }}>
                     {/* Experience list  */}
                     <ItemHeader
                         title="Experience"
                         icon={iconItemHeader}
-                        onPress={() => setModalExpVisible(true)}></ItemHeader>
-                    {renderItemExp}
+                        onPress={() => setModalExpVisible(true)} />
 
+                    {globalUser.companies.length > 0 ?
+                        globalUser.companies.map((item) => <ExperienceItem
+                            key={item._id}
+                            major={item.major}
+                            companyname={item.companyname}
+                            position={item.position}
+                            expyear={item.expyear}
+                            onPress={() => {
+                                setItemExpEdit(item);
+                                setModalEditVisible(true);
+                            }}
+                        ></ExperienceItem>
+                        )
+                        :
+                        null
+                    }
+
+                    <View style={{ height: 20 }}></View>
 
                     {/* Education list  */}
                     <ItemHeader
                         title="Education"
                         icon={iconItemHeader}
                         onPress={() => setModalEduVisible(true)}></ItemHeader>
-                    {renderItemEdu}
 
-                    <AddExpModal
-                        visible={modalExpVisible}
-                        onPressClose={() => setModalExpVisible(false)}
-                    ></AddExpModal>
-
-                    <AddEduModal
-                        visible={modalEduVisible}
-                        onPressClose={() => setModalEduVisible(false)}
-                    ></AddEduModal>
-
-                    <EditModal
-                        visible={modalEditVisible}
-                        onPressClose={() => setModalEditVisible(false)}
-                        item={itemEdit}
-                    ></EditModal>
+                    {globalUser.schools.length > 0 ?
+                        globalUser.schools.map((item) => <EducationItem
+                            key={item._id}
+                            schoolname={item.schoolname}
+                            major={item.major}
+                            schoolyaer={item.schoolyear}
+                            onPress={() => {
+                                setItemEduEdit(item);
+                                setModalEditEduVisible(true);
+                            }}
+                        ></EducationItem>
+                        )
+                        :
+                        null
+                    }
 
                 </ScrollView>
+
             </Delayed>
 
+            <AddExpModal
+                visible={modalExpVisible}
+                onPressClose={() => setModalExpVisible(false)}
+            ></AddExpModal>
 
+            <AddEduModal
+                visible={modalEduVisible}
+                onPressClose={() => setModalEduVisible(false)}
+            ></AddEduModal>
 
+            <EditExpModal
+                visible={modalEditVisible}
+                onPressClose={() => setModalEditVisible(false)}
+                item={itemExpEdit}
+            ></EditExpModal>
+
+            <EditEduModal
+                visible={modalEditEduVisible}
+                onPressClose={() => setModalEditEduVisible(false)}
+                item={itemEduEdit}
+            ></EditEduModal>
 
         </View>
     );

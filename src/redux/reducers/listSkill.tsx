@@ -4,25 +4,69 @@ const initialState = {
     listSkill: [],
     rootDefaultSkill: [],
     listSkillDefault: [],
+
+    addSkillLoading: false,
+    updateSkillLoading: false,
+    deleteSkillLoading: false,
+
+    listRequireSkill: [],
 }
 
 const listSkillReducer = (state = initialState, action) => {
     switch (action.type) {
 
-        case ActionTypes.ADD_SKILL: {
+        case ActionTypes.ADD_REQUIRE_SKILL: {
             return {
                 ...state,
-                listSkill: [...state.listSkill, action.payload]
+                listRequireSkill: [...state.listRequireSkill, action.payload],
             }
             break;
         }
 
-        case ActionTypes.DELETE_SKILL: {
-            const newArray = state.listSkill.filter(skill => skill.id !== action.payload);
-
+        case ActionTypes.ADD_SKILL_LOADING: {
             return {
                 ...state,
-                listSkill: newArray,
+                addSkillLoading: true,
+            }
+            break;
+        }
+
+        case ActionTypes.ADD_SKILL_SUCCESS: {
+            return {
+                ...state,
+                addSkillLoading: false,
+            }
+            break;
+        }
+
+        case ActionTypes.ADD_SKILL_ERROR: {
+            return {
+                ...state,
+                addSkillLoading: false,
+            }
+            break;
+        }
+
+        case ActionTypes.DELETE_SKILL_LOADING: {
+            return {
+                ...state,
+                deleteSkillLoading: true,
+            }
+            break;
+        }
+
+        case ActionTypes.DELETE_SKILL_SUCCESS: {
+            return {
+                ...state,
+                deleteSkillLoading: false,
+            }
+            break;
+        }
+
+        case ActionTypes.DELETE_SKILL_ERROR: {
+            return {
+                ...state,
+                deleteSkillLoading: false,
             }
             break;
         }

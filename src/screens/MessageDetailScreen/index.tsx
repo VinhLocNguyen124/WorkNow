@@ -214,10 +214,8 @@ const MessageDetailScreen = () => {
     //-------------------------Effects-----------------------------------
 
     useEffect(() => {
-
         return () => {
             console.log("MessageDetailScreen Unmount");
-
         }
     }, []);
 

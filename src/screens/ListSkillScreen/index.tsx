@@ -36,7 +36,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 //helpers
 import { setI18nConfig, translate } from '../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
-import { FitImageDimension } from '../../helpers/FitImageDimension';
+import { filterBestSkill, filterSubSkill } from '../../helpers/ArrayHandling';
 import {
     onLaunchImageGallery,
     onLaunchCamera,
@@ -47,7 +47,7 @@ import {
 
 //redux & actions
 import { useSelector, useDispatch } from 'react-redux';
-import { getListProvince, onSelectProvince, getListCityOrDistrict, onSelectCity } from '../../redux/actions/listChoice';
+import { onAddSkill } from '../../redux/actions/listSkill';
 
 //Components
 import Delayed from './../../components/Delayed';
@@ -81,7 +81,8 @@ const ListSkillScreen = () => {
         type: '',
         important: false
     });
-    const listSkill = useSelector(state => state.listSkill.listSkill);
+
+    const globalUser = useSelector(state => state.globalUser.globalUser);
 
     //others
     const navigation = useNavigation();
@@ -111,7 +112,7 @@ const ListSkillScreen = () => {
     const _renderItem = useCallback(
         ({ item }) => (
             <ItemListSkill
-                key={item.id}
+                key={item._id}
                 name={item.name}
                 important={item.important}
                 onPress={() => { onPressItemListSkill(item) }}
@@ -122,7 +123,7 @@ const ListSkillScreen = () => {
     );
 
     const keyExtractor = useCallback(
-        item => item.id.toString(),
+        item => item._id,
         []
     );
 
@@ -138,13 +139,29 @@ const ListSkillScreen = () => {
                     icon={iconHeader}
                     onPress={() => setModalAddVisible(true)}
                 ></ItemHeader>
-                {listSkill ?
+
+                <Text style={{ fontSize: 18, fontWeight: 'bold', width: '100%', padding: 10, backgroundColor: Colors.LightSkyBlue }}>Best skills</Text>
+
+                {globalUser.skills.length > 0 ?
                     <FlatList
-                        data={listSkill}
+                        style={{ marginHorizontal: 15 }}
+                        data={filterBestSkill(globalUser.skills)}
                         renderItem={_renderItem}
                         keyExtractor={keyExtractor}
                     ></FlatList>
-                    : <View></View>
+                    : null
+                }
+
+                <Text style={{ fontSize: 18, fontWeight: 'bold', width: '100%', padding: 10, backgroundColor: Colors.LightSkyBlue }}>Sub skills</Text>
+
+                {globalUser.skills.length > 0 ?
+                    <FlatList
+                        style={{ marginHorizontal: 15 }}
+                        data={filterSubSkill(globalUser.skills)}
+                        renderItem={_renderItem}
+                        keyExtractor={keyExtractor}
+                    ></FlatList>
+                    : null
                 }
 
                 <AddSkillModal
