@@ -39,6 +39,7 @@ import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen/index';
 import GeneralProfileScreen from './src/screens/GeneralProfileScreen/index';
 import ListRequestScreen from './src/screens/ListRequestScreen/index';
 import PostDetailScreen from './src/screens/PostDetailScreen/index';
+import ListFriendScreen from './src/screens/ListFriendScreen/index';
 
 //navigation packages
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
@@ -280,6 +281,11 @@ const App = () => {
           }}
         ></Stack.Screen>
         <Stack.Screen name="PostDetail" component={PostDetailScreen}
+          options={{
+            headerShown: false,
+          }}
+        ></Stack.Screen>
+        <Stack.Screen name="ListFriend" component={ListFriendScreen}
           options={{
             headerShown: false,
           }}

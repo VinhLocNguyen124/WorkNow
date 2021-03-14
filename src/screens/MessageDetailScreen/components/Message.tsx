@@ -20,64 +20,70 @@ import * as RNLocalize from 'react-native-localize';
 import moment from 'moment';
 
 //Components
-import TextHighLight from '../../../components/TextHighLight';
+import Wellcome from './WellcomeChatRoom';
 
 //Consts
 import { Colors } from '../../../constansts/color';
+import { Dimens } from '../../../constansts/dimension';
+const imageDimen = Dimens.widthScreen * 0.05;
 import PropTypes from 'prop-types';
+
+//redux
+import { useSelector } from 'react-redux';
 
 
 const Message = (props) => {
+    const globalUser = useSelector(state => state.globalUser.globalUser);
 
-    const { username, message, date, } = props;
+    const { username, content, time, email, roomKey, urlavatar } = props;
 
     return (
-        <View style={{
-            flexDirection: 'column',
-            alignItems: username === "loc" ? 'flex-end' : 'flex-start',
-            marginHorizontal: 10,
-            marginVertical: 6,
-        }}>
+        username === "admin" ?
+            <Wellcome roomKey={roomKey}></Wellcome>
+            :
+            <View style={{
+                flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', marginHorizontal: 5, marginVertical: 2
+            }}>
+                {username === globalUser.username ? null : <Image source={{ uri: urlavatar }} style={{ height: imageDimen, width: imageDimen, borderRadius: imageDimen, marginBottom: 10 }}></Image>}
+                <View style={{
+                    flexDirection: 'column',
+                    alignItems: username === globalUser.username ? 'flex-end' : 'flex-start',
+                    marginHorizontal: 5,
+                    marginVertical: 5,
+                    flex: 1
+                }}>
 
-            <Text style={{
-                color: username === "loc" ? 'white' : 'black',
-                fontSize: 16,
-                backgroundColor: username === "loc" ? Colors.MainBlue : '#f2f2f2',
-                padding: 10,
-                borderRadius: 10,
-                maxWidth: '70%'
-            }}>{message}</Text>
+                    <Text style={{
+                        color: username === globalUser.username ? 'white' : 'black',
+                        fontSize: 16,
+                        backgroundColor: username === globalUser.username ? Colors.MainBlue : '#f2f2f2',
+                        paddingVertical: 5,
+                        paddingHorizontal: 10,
+                        borderRadius: 10,
+                        maxWidth: '70%'
+                    }}>{content}</Text>
 
 
-            <Text style={{ width: '95%', fontSize: 12, textAlign: username === "loc" ? 'right' : 'left' }} >{username} - <Text style={{ fontWeight: 'bold', color: Colors.DeepSkyBlue, fontSize: 12 }}>{moment(date).fromNow()}</Text></Text>
+                    <Text style={{ width: '95%', fontSize: 12, textAlign: username === globalUser.username ? 'right' : 'left' }} >{username} - <Text style={{ fontWeight: 'bold', color: Colors.DeepSkyBlue, fontSize: 12 }}>{moment(time).fromNow()}</Text></Text>
 
+                </View>
+                {username !== globalUser.username ? null : <Image source={{ uri: globalUser.urlavatar }} style={{ height: imageDimen, width: imageDimen, borderRadius: imageDimen, marginBottom: 10 }}></Image>}
+            </View>
 
-        </View>
     );
 }
 
 Message.propTypes = ({
     username: PropTypes.string,
-    message: PropTypes.string,
-    date: PropTypes.string,
-    onPress: PropTypes.func,
+    content: PropTypes.string,
+    time: PropTypes.number,
+    email: PropTypes.string,
+    roomKey: PropTypes.string,
+    urlavatar: PropTypes.string
 });
 
 Message.defaultProps = ({
-    onPress: null,
-});
-
-const tempStyles = StyleSheet.create({
-
-    ms_details_container: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 10,
-        marginVertical: 6,
-    },
 
 });
-
-
 
 export default React.memo(Message);

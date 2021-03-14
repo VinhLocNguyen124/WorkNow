@@ -142,14 +142,14 @@ const RegisterScreen = () => {
 
                     <FormInput
                         title={translate('Full Name')}
-                        onChangeText={name => setName(name)}
+                        onChangeText={name => setName(name.trim())}
                         value={name}
                     />
 
                     <FormInput
                         style={{ marginVertical: 30 }}
                         title={translate('Email Address')}
-                        onChangeText={email => setEmail(email)}
+                        onChangeText={email => setEmail(email.trim())}
                         value={email}
                     />
 
@@ -159,7 +159,7 @@ const RegisterScreen = () => {
                             style={styles.input}
                             secureTextEntry={hidePassword ? true : false}
                             autoCapitalize="none"
-                            onChangeText={password => setPassword(password)}
+                            onChangeText={password => setPassword(password.trim())}
                             value={password}
                         ></TextInput>
 

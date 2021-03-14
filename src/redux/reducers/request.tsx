@@ -6,6 +6,13 @@ const initialState = {
     deleteLoading: false,
     deleteError: null,
     status: "not",
+
+    listFriend: [],
+    getListFriendLoading: false,
+    getListFriendError: null,
+
+    disconnectLoading: false,
+    disconnectError: null,
 }
 
 const loginReducer = (state = initialState, action) => {
@@ -52,6 +59,57 @@ const loginReducer = (state = initialState, action) => {
                 ...state,
                 deleteLoading: false,
                 deleteError: action.payload
+            }
+            break;
+        }
+
+        case ActionTypes.GET_LIST_FRIEND_LOADING: {
+            return {
+                ...state,
+                getListFriendLoading: true
+            }
+            break;
+        }
+
+        case ActionTypes.GET_LIST_FRIEND_SUCCESS: {
+            return {
+                ...state,
+                getListFriendLoading: false,
+                listFriend: action.payload
+            }
+            break;
+        }
+
+        case ActionTypes.GET_LIST_FRIEND_ERROR: {
+            return {
+                ...state,
+                getListFriendLoading: false,
+                getListFriendError: action.payload,
+            }
+            break;
+        }
+
+        case ActionTypes.DISCONNECT_LOADING: {
+            return {
+                ...state,
+                disconnectLoading: true
+            }
+            break;
+        }
+
+        case ActionTypes.DISCONNECT_SUCCESS: {
+            return {
+                ...state,
+                disconnectLoading: false
+            }
+            break;
+        }
+
+        case ActionTypes.DISCONNECT_ERROR: {
+            return {
+                ...state,
+                disconnectLoading: false,
+                disconnectError: action.payload
             }
             break;
         }

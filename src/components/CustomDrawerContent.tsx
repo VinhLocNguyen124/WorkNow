@@ -28,6 +28,9 @@ import { Dimens } from '../constansts/dimension';
 //redux 
 import { useSelector } from 'react-redux';
 
+//helpers
+import { returnAvatarUser } from '../helpers/UIHandling';
+
 
 const CustomDrawerContent = (props) => {
     const { navigation } = props;
@@ -56,7 +59,11 @@ const CustomDrawerContent = (props) => {
                             borderWidth: 2,
                             borderColor: Colors.DarkTurquoise,
                         }}
-                            source={{ uri: globalUser ? globalUser.urlavatar : 'https://icon-library.com/images/no-user-image-icon/no-user-image-icon-26.jpg' }} />
+                            source={{
+                                uri: globalUser ?
+                                    returnAvatarUser(globalUser.urlavatar) :
+                                    'https://icon-library.com/images/no-user-image-icon/no-user-image-icon-26.jpg'
+                            }} />
                         <TouchableOpacity style={{
                             padding: 5, margin: 5, borderWidth: 2,
                             borderColor: '#cccccc', flex: 1, borderRadius: 5,
@@ -76,14 +83,19 @@ const CustomDrawerContent = (props) => {
 
                     {/* Phần menu  */}
                     <DrawerItem
-                        label="Home page"
+                        label="Home Page"
                         onPress={() => navigation.navigate('Home')}
                         icon={() => <AntDesign name="home" size={18} color={Colors.Gray}></AntDesign>}
                     />
                     <DrawerItem
-                        label="Your profile"
+                        label="Your Profile"
                         onPress={() => navigation.navigate('Profile')}
                         icon={() => <AntDesign name="profile" size={18} color={Colors.Gray}></AntDesign>}
+                    />
+                    <DrawerItem
+                        label="Your Friends"
+                        onPress={() => navigation.navigate('ListFriend')}
+                        icon={() => <AntDesign name="addusergroup" size={18} color={Colors.Gray}></AntDesign>}
                     />
                     <DrawerItem
                         label="Scan QR Code"

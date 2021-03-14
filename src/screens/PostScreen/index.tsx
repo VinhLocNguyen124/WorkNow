@@ -43,7 +43,7 @@ import {
     onLaunchCamera,
     onPickFile
 } from '../../helpers/MediaConfig';
-import { returnSnapPoints } from '../../helpers/UIHandling';
+import { returnSnapPoints, returnAvatarUser } from '../../helpers/UIHandling';
 import DocumentPicker from 'react-native-document-picker';
 import PDF from 'react-native-pdf';
 
@@ -271,7 +271,7 @@ const PostScreen = () => {
                 }}>
 
                     <View style={{ flexDirection: 'row', alignItems: "center" }}>
-                        <Image source={{ uri: globalUser.urlavatar }} style={styles.avatar} />
+                        <Image source={{ uri: returnAvatarUser(globalUser.urlavatar) }} style={styles.avatar} />
                         <View style={{ flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                             <Text style={{ fontWeight: '700', fontSize: 15, marginBottom: 5 }}>{globalUser.username}</Text>
 

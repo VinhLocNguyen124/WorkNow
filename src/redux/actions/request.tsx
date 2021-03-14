@@ -100,6 +100,63 @@ export const acceptRequest = (idrequest: string, email: string) => (dispatch, ge
     });
 }
 
+export const getListFriend = (idcurrentuser: string) => (dispatch, getState) => {
+
+    dispatch({
+        type: ActionTypes.GET_LIST_FRIEND_LOADING
+    });
+
+    getData("requests/friends/" + idcurrentuser).then(data => {
+        if (data) {
+            dispatch({
+                type: ActionTypes.GET_LIST_FRIEND_SUCCESS,
+                payload: data
+            });
+        }
+    }).catch(error => {
+        dispatch({
+            type: ActionTypes.GET_LIST_FRIEND_ERROR,
+            payload: error
+        });
+        ToastAndroid.show(`Error: ${error.message || 'Unexpected Error!!!'}`, ToastAndroid.SHORT);
+    });
+
+}
+
+export const disconnect = (idconnect: string, idcurrentuser: string) => (dispatch, getState) => {
+
+    dispatch({
+        type: ActionTypes.DISCONNECT_LOADING
+    });
+
+    fetchData("requests/disconnect/" + idconnect, "DELETE").then(data => {
+        if (data.status === "success") {
+            dispatch({
+                type: ActionTypes.DISCONNECT_SUCCESS
+            });
+
+            getData("requests/friends/" + idcurrentuser).then(data => {
+                if (data) {
+                    dispatch({
+                        type: ActionTypes.GET_LIST_FRIEND_SUCCESS,
+                        payload: data
+                    });
+                }
+            })
+
+            ToastAndroid.show(`Đã ngắt kết nối thành công !`, ToastAndroid.SHORT);
+        }
+    }).catch(error => {
+        dispatch({
+            type: ActionTypes.DISCONNECT_ERROR,
+            payload: error.message
+        });
+        ToastAndroid.show(`Error: ${error.message || '2Unexpected Error!!!'}`, ToastAndroid.SHORT);
+    });
+}
+
+
+
 
 
 

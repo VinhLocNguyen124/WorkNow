@@ -17,12 +17,10 @@ import auth from '@react-native-firebase/auth';
 import { FirebaseErrorRespond } from '../../helpers/FirebaseErrorRespond';
 
 //Styles & Images & Icons
-import BackGround from './../../assets/images/svg/BackGround';
 import { styles } from '../Styles/styles';
-import { Paths } from '../../constansts/path';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 //Navigation
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -39,10 +37,8 @@ import { getData, fetchData } from '../../apis/apiCaller';
 
 //Components
 import HorizontalBarChart from './components/HorizontalBarChart';
-import ShortTimeline from './components/ShortTimeline';
 import Background from './components/Background';
 import ListSkill from './components/ListSkill';
-import Contact from './components/Contact';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import ItemHeader from './components/ItemHeader'
@@ -76,9 +72,6 @@ const GeneralProfileScreen = () => {
     const [loadingGetInfo, setLoadingGetInfo] = useState(false);
     const sendLoading = useSelector(state => state.request.sendLoading);
     const [statusConnect, setStatusConnect] = useState("not");
-
-    //notsure
-    const listSkill = useSelector(state => state.listSkill.listSkill)
 
     //Others
     const navigation = useNavigation();
@@ -127,8 +120,13 @@ const GeneralProfileScreen = () => {
         }).catch(error => {
             ToastAndroid.show(`Error: ${error.message || '2Unexpected Error!!!'}`, ToastAndroid.SHORT);
         });
+    }
 
-
+    const onClickSendRequest = () => {
+        if (statusConnect === "not") {
+            dispatch(sendRequest(globalUserReal._id, globalUser._id));
+            setStatusConnect("waiting");
+        }
     }
 
     return (
@@ -142,19 +140,29 @@ const GeneralProfileScreen = () => {
                     <View style={{ flexDirection: 'column', backgroundColor: 'white', paddingBottom: 10, }}>
                         <Image source={{ uri: randomCoverImage() }} style={{ height: 100, width: '100%' }} ></Image>
 
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <TouchableOpacity style={{
+                                padding: 5,
+                                backgroundColor: 'white', margin: 2,
+                                borderRadius: 20, elevation: 5
+                            }} onPress={() => navigation.navigate("MessageDetail", { _idguess: globalUser._id })}>
+                                <AntDesign name="message1" size={24} color={Colors.DarkTurquoise}></AntDesign>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={{
-                            alignSelf: 'flex-end', padding: marginStandart,
-                            backgroundColor: Colors.MainBlue, margin: 10, width: 200,
-                            borderRadius: 5, elevation: 5
-                        }} onPress={() => dispatch(sendRequest(globalUserReal._id, globalUser._id))}>
+                            <TouchableOpacity style={{
+                                padding: marginStandart,
+                                backgroundColor: Colors.MainBlue, margin: 10, paddingHorizontal: 15,
+                                borderRadius: 5, elevation: 5
+                            }} onPress={onClickSendRequest}>
 
-                            {sendLoading ?
-                                <ActivityIndicator size="small" color={'white'}></ActivityIndicator>
-                                :
-                                <Text style={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>{statusConnect === "not" ? "Connect" : statusConnect === "waiting" ? "Sending request" : "Connecting"}</Text>
-                            }
-                        </TouchableOpacity>
+                                {sendLoading ?
+                                    <ActivityIndicator size="small" color={'white'}></ActivityIndicator>
+                                    :
+                                    <Text style={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>{statusConnect === "not" ? "Connect" : statusConnect === "waiting" ? "Sending request" : "Connecting"}</Text>
+                                }
+                            </TouchableOpacity>
+                        </View>
+
 
                         <View style={{ flexDirection: 'column', marginLeft: marginStandart, }}>
                             <Text style={styles.headerTitle}>{globalUser.username}</Text>

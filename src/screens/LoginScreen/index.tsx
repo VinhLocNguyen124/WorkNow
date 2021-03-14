@@ -150,7 +150,7 @@ const LoginScreen = () => {
 
                     <FormInput
                         title={translate('Email Address')}
-                        onChangeText={email => setEmail(email)}
+                        onChangeText={email => setEmail(email.trim())}
                         value={email}
                         contentType={"emailAddress"}
                     />
@@ -161,7 +161,7 @@ const LoginScreen = () => {
                             style={styles.input}
                             secureTextEntry={hidePassword ? true : false}
                             autoCapitalize="none"
-                            onChangeText={password => setPassword(password)}
+                            onChangeText={password => setPassword(password.trim())}
                             value={password}
                         ></TextInput>
 

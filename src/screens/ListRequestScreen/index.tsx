@@ -26,6 +26,7 @@ import { useNavigation } from '@react-navigation/native';
 //helpers
 import { setI18nConfig, translate } from '../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
+import { returnAvatarUser } from '../../helpers/UIHandling';
 
 //Components
 import Header from '../../components/Header';
@@ -53,7 +54,7 @@ const ListRequestScreen = () => {
 
     const renderItem = useCallback(
         ({ item }) => <View style={{ flexDirection: 'row', padding: 10, borderBottomWidth: 1, borderBottomColor: Colors.LightGray, alignItems: 'center' }}>
-            <Image source={{ uri: item.urlavatar }} style={styles.avatar} />
+            <Image source={{ uri: returnAvatarUser(item.urlavatar) }} style={styles.avatar} />
             <View style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', flex: 1 }}>
                 <TextHighLight
                     mainText={item.usernamesend}

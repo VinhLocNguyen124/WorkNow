@@ -26,7 +26,7 @@ import { setI18nConfig, translate } from '../../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
 import { FormatNumber } from '../../../helpers/FormatNumber';
 import moment from 'moment';
-import PDF from 'react-native-pdf';
+import { returnAvatarUser } from '../../../helpers/UIHandling';
 
 //Components
 import TextHighLight from '../../../components/TextHighLight';
@@ -45,8 +45,6 @@ import { likePost, disLikePost } from '../../../redux/actions/post';
 
 //Navigation
 import { useNavigation } from '@react-navigation/native';
-
-
 
 const PostItem = (props) => {
 
@@ -134,7 +132,7 @@ const PostItem = (props) => {
                             :
                             navigation.navigate("GeneralProfile", { _email: emailuser })
                     }}>
-                        <Image source={{ uri: urlavatar }} style={styles.avatar} />
+                        <Image source={{ uri: returnAvatarUser(urlavatar) }} style={styles.avatar} />
                     </TouchableOpacity>
                     :
                     <View style={{

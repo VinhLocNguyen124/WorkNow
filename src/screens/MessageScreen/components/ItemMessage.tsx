@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -18,6 +18,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { setI18nConfig, translate } from '../../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
 import moment from 'moment';
+import { getUserInfo } from '../../../helpers/FirebaseEventHandler';
+import { returnAvatarUser } from '../../../helpers/UIHandling';
 
 //Components
 import TextHighLight from '../../../components/TextHighLight';
@@ -29,31 +31,62 @@ import PropTypes from 'prop-types';
 
 const ItemMessage = (props) => {
 
-    const { avatarurl, username, message, date, onPress } = props;
+    const { idguess, message, date, unread, onPress } = props;
+
+    const [user, setUser] = useState({
+        "_id": "",
+        "urlavatar": "",
+        "username": "",
+        "headline": "",
+        "email": ""
+    });
+
+    useEffect(() => {
+        let isMounted = true;
+        getUserInfo(idguess).then(data => {
+            if (isMounted) setUser(data);
+        })
+
+        return () => {
+            isMounted = false;
+        }
+    }, []);
 
     return (
         <TouchableOpacity style={tempStyles.post_details_container} onPress={onPress}>
             <View style={{ borderWidth: 2, borderColor: Colors.MainBlue, borderRadius: 30, marginRight: 10 }}>
-                <Image source={{ uri: avatarurl }} style={{ ...styles.avatar, margin: 2, marginRight: 2 }} />
+                <Image source={{ uri: returnAvatarUser(user.urlavatar) }} style={{ ...styles.avatar, margin: 2, marginRight: 2 }} />
             </View>
 
             <View style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', flex: 1 }}>
                 <TextHighLight
-                    mainText={username}
-                    fontSizeMT={16}
-                />
-                <Text style={{ ...styles.text, width: '95%', fontSize: 14, textAlign: 'justify' }} numberOfLines={1} ellipsizeMode="tail">{message}</Text>
-                <Text style={{ fontWeight: 'bold', color: Colors.DeepSkyBlue, fontSize: 12 }}>{moment(date).fromNow()}</Text>
+                    mainText={user.username}
+                    fontSizeMT={16} />
+
+                <Text
+                    style={{ ...styles.text, width: '95%', fontSize: 13, textAlign: 'justify', fontWeight: unread ? 'bold' : 'normal', color: unread ? Colors.Gray : Colors.LightGray }}
+                    numberOfLines={1}
+                    ellipsizeMode="tail">  {message}</Text>
+
+                <Text
+                    style={{ fontWeight: unread ? 'bold' : 'normal', color: unread ? Colors.DeepSkyBlue : Colors.LightGray, fontSize: 12 }}
+                >{moment(date).fromNow()}</Text>
             </View>
+
+            {unread ?
+                <View style={{ height: 5, width: 5, borderRadius: 5, backgroundColor: Colors.MainBlue }}></View>
+                :
+                null
+            }
         </TouchableOpacity>
     );
 }
 
 ItemMessage.propTypes = ({
-    avatarurl: PropTypes.string,
-    username: PropTypes.string,
+    idguess: PropTypes.string,
     message: PropTypes.string,
-    date: PropTypes.string,
+    date: PropTypes.number,
+    unread: PropTypes.bool,
     onPress: PropTypes.func,
 });
 
@@ -62,14 +95,12 @@ ItemMessage.defaultProps = ({
 });
 
 const tempStyles = StyleSheet.create({
-
     post_details_container: {
         flexDirection: 'row',
         alignItems: 'center',
         marginHorizontal: 10,
         marginVertical: 6,
     },
-
 });
 
 
