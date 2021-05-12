@@ -23,6 +23,14 @@ const listSkillReducer = (state = initialState, action) => {
             break;
         }
 
+        case ActionTypes.DELETE_REQUIRE_SKILL: {
+            return {
+                ...state,
+                listRequireSkill: [...state.listRequireSkill.slice(0, action.payload), ...state.listRequireSkill.slice(action.payload + 1)],
+            }
+            break;
+        }
+
         case ActionTypes.ADD_SKILL_LOADING: {
             return {
                 ...state,

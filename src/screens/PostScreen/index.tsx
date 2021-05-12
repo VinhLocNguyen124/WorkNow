@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
     View,
     Text,
@@ -32,7 +32,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //Navigation
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 //helpers
 import { setI18nConfig, translate } from '../../helpers/setI18nConfig';
@@ -61,6 +61,7 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import BottomSheetList from './Components/BottomSheetList';
 import WatchingScope from './Components/WatchingScope';
 import Delayed from './../../components/Delayed';
+import PostShareThumbnail from './Components/PostShareThumbnail';
 
 //Consts
 import { Colors } from '../../constansts/color';
@@ -72,9 +73,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 
 
 const PostScreen = () => {
-    console.log("render PostScreen")
-    //Consts
-    const bottomSheetHeight = (dataBottomSheet.length + 2) * 40;
+    console.log("render PostScreen");
 
     //States
     const globalUser = useSelector(state => state.globalUser.globalUser);
@@ -83,7 +82,6 @@ const PostScreen = () => {
     const [postContent, setPostContent] = useState("");
     const [allowCmt, setAllowCmt] = useState(true);
     const [seeScope, setSeeScope] = useState("anyone");
-
 
     const [response, setResponse] = useState(null);
     const [imageSource, setImageSource] = useState(null);
@@ -96,8 +94,10 @@ const PostScreen = () => {
     const sheetRef = React.useRef(null);
     const sheetRefWatchingScope = React.useRef(null);
     const navigation = useNavigation();
+    const route = useRoute();
     const dispatch = useDispatch();
     const waitLoadingTime = 500;
+    const postShare = useRef(null);
 
     //-------------------------Effects-----------------------------------
 
@@ -105,6 +105,11 @@ const PostScreen = () => {
         const { email, displayName } = auth().currentUser;
         setEmail(email);
         setDisplayName(displayName);
+
+        if (route.params) {
+            postShare.current = route.params;
+            console.log(postShare.current);
+        }
 
         return () => {
             console.log("Post Screen Unmount");
@@ -146,7 +151,7 @@ const PostScreen = () => {
     const onPressPostContent = () => {
         const post = {
             emailuser: email,
-            idpostshare: "",
+            idpostshare: postShare ? postShare.current._idpost : "",
             content: postContent,
             imgurl: "",
             pdfurl: "",
@@ -156,6 +161,7 @@ const PostScreen = () => {
             active: true
         }
         dispatch(addNewPost(post, imageSource, pdfSource, navigation, globalUser.email));
+        Keyboard.dismiss();
     }
 
     const onPressBottomSheetItem = (lable: string) => {
@@ -297,6 +303,7 @@ const PostScreen = () => {
                             placeholder="What do you want to talk about ?"
                         ></TextInput>
 
+                        {/* Phần pdf file  */}
                         {pdfResponse && (
                             <View style={{ height: pdfExpanding ? 400 : 120, width: '100%', backgroundColor: '#f2f2f2', padding: 5, borderRadius: 5, marginTop: 20, flexDirection: 'row' }}>
                                 <PDF
@@ -315,10 +322,7 @@ const PostScreen = () => {
                                     }}
                                     style={{ height: pdfExpanding ? 390 : 110, width: pdfExpanding ? 280 : 90 }} />
 
-
                                 <Text style={{ marginLeft: 5, fontWeight: 'bold', flex: 1, marginRight: 5, color: pdfExpanding ? 'transparent' : 'black' }}>{pdfResponse.name}</Text>
-
-
 
                                 <TouchableOpacity style={{}} onPress={onDeletePdfFile}>
                                     <AntDesign name="closecircleo" size={20} color={Colors.Gray} />
@@ -337,6 +341,7 @@ const PostScreen = () => {
 
                         )}
 
+                        {/* Phần hình ảnh  */}
                         {response && (
                             <View style={{ marginTop: 10 }}>
                                 <Image
@@ -354,8 +359,24 @@ const PostScreen = () => {
                             </View>
                         )}
 
-                    </ScrollView>
+                        {/* Phần post thu nhỏ cần chia sẽ - mode share  */}
+                        {
+                            postShare.current ?
+                                <PostShareThumbnail
+                                    padding={5}
+                                    imgurl={postShare.current._imgurl}
+                                    textcontent={postShare.current._textcontent}
+                                    date={postShare.current._date}
+                                    seescope={postShare.current._seescope}
+                                    urlavatar={postShare.current._urlavatar}
+                                    username={postShare.current._username}
+                                    headline={postShare.current._headline}
+                                    emailuser={postShare.current._emailuser}
+                                    recommend={postShare.current._recommend}
+                                ></PostShareThumbnail> : null
+                        }
 
+                    </ScrollView>
 
                 </View>
             </Delayed>
@@ -385,7 +406,6 @@ const PostScreen = () => {
 
                 </View>
             </Delayed>
-
 
 
         </View>

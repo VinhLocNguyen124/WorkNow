@@ -18,11 +18,10 @@ import {
     FlatList,
     ToastAndroid,
     ActivityIndicator,
-
 } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-// console.disableYellowBox = true;
+console.disableYellowBox = true;
 
 //Firebase
 import auth from '@react-native-firebase/auth';
@@ -33,7 +32,6 @@ import { styles } from '../Styles/styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
 
 //Navigation
 import { useNavigation } from '@react-navigation/native';
@@ -56,6 +54,7 @@ import { fetchData } from '../../apis/apiCaller';
 //redux & actions
 import { useSelector, useDispatch } from 'react-redux';
 import { submitRequirement } from '../../redux/actions/requirement';
+import { onDeleteRequireSkill } from '../../redux/actions/listSkill';
 
 //Components
 import Delayed from './../../components/Delayed';
@@ -75,22 +74,22 @@ import { Positions } from '../../constansts/listPosition';
 const iconHeader = <AntDesign name="plussquareo" size={25} color={Colors.MainBlue}></AntDesign>
 
 const RequirementScreen = () => {
-    console.log("render Requirement Screen")
 
     //States
     const province = useSelector(state => state.listChoice.province);
     const city = useSelector(state => state.listChoice.city);
     const path = useSelector(state => state.listChoice.path);
+    const globalUser = useSelector(state => state.globalUser.globalUser);
+    const submitLoading = useSelector(state => state.requirement.submitLoading);
+    const listRequireSkill = useSelector(state => state.listSkill.listRequireSkill);
     const [jobName, setJobName] = useState('');
     const [companyName, setCompanyName] = useState('');
     const [position, setPosition] = useState({ _id: '', name: '' });
     const [jobDesc, setJobDesc] = useState('');
     const [modalAddVisible, setModalAddVisible] = useState(false);
-    const listRequireSkill = useSelector(state => state.listSkill.listRequireSkill);
     const [showListPosition, setShowListPosition] = useState(false);
     const [listPosition, setListPosition] = useState(Positions);
-    const globalUser = useSelector(state => state.globalUser.globalUser);
-    const submitLoading = useSelector(state => state.requirement.submitLoading);
+    const [imageSource, setImageSource] = useState(null);
 
     //others
     const navigation = useNavigation();
@@ -107,18 +106,30 @@ const RequirementScreen = () => {
     }, []);
 
     //-------------------------Functions---------------------------------
+
+    const onPressCompanyLogoAdding = () => {
+        onLaunchImageGallery((source, response) => {
+            setImageSource(source);
+        })
+    }
+
+    const onRemoveCompanyLogo = () => {
+        setImageSource(null);
+    }
+
     const onPressSubmit = () => {
         const requirement = {
             iduser: globalUser._id,
             idposition: position._id,
             jobdescription: jobDesc,
-            companyname: companyName,
+            company_name: companyName,
+            company_logo: "https://res.cloudinary.com/locnguyen-cloud/image/upload/v1620160155/company_logo_dsexws.png",
             province: province,
             city: city,
             jobname: jobName,
             listskill: listRequireSkill,
         }
-        dispatch(submitRequirement(requirement));
+        dispatch(submitRequirement(requirement, imageSource));
     }
 
     const onChangeTextSearchPosition = (text) => {
@@ -129,13 +140,19 @@ const RequirementScreen = () => {
         }));
     }
 
-
     const _renderItem = useCallback(
-        ({ item }) => (
-            <Text style={{ borderBottomColor: Colors.LightGray, borderBottomWidth: 1, padding: 10 }}>{item.name}</Text>
-        )
-        ,
-        []
+        ({ item, index }) => (
+            <View style={{
+                flexDirection: 'row', justifyContent: 'space-between',
+                borderBottomColor: Colors.LightGray, borderBottomWidth: 1, padding: 10,
+                alignItems: 'center'
+            }}>
+                <Text style={{}}>{item.name}</Text>
+                <TouchableOpacity onPress={() => dispatch(onDeleteRequireSkill(index))}>
+                    <AntDesign name="closesquareo" size={22} color={Colors.Gray}></AntDesign>
+                </TouchableOpacity>
+            </View>
+        ), []
     );
 
     const keyExtractor = useCallback(
@@ -171,7 +188,7 @@ const RequirementScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: 50 }}>
                     <Ionicons name="md-arrow-back" size={24} color={Colors.Gray}></Ionicons>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Requirement</Text>
@@ -197,19 +214,68 @@ const RequirementScreen = () => {
                         onChangeText={text => setJobName(text)}
                         value={jobName}
                     ></FormInput>
+
                     <FormInput
                         title="Company name"
                         style={{ marginTop: 20 }}
                         onChangeText={text => setCompanyName(text)}
                         value={companyName}
                     ></FormInput>
+
+                    <Text style={{ ...styles.inputTitle, marginTop: 20 }}>Company Logo</Text>
+
+                    {imageSource ?
+                        <View>
+                            <Image
+                                source={{ uri: imageSource.uri }}
+                                style={{
+                                    height: 100,
+                                    width: 100,
+                                    borderRadius: 10,
+                                }}
+                            ></Image>
+                            <TouchableOpacity style={{ position: 'absolute', top: 10, right: 10 }} onPress={onRemoveCompanyLogo}>
+                                <AntDesign name="closecircleo" size={20} color={Colors.LightGray} />
+                            </TouchableOpacity>
+                        </View>
+                        :
+                        <TouchableOpacity style={{
+                            height: 100, width: 100, borderWidth: 1, borderRadius: 5,
+                            borderColor: Colors.LightGray, borderStyle: 'dashed',
+                            justifyContent: 'center', alignItems: 'center'
+                        }} onPress={onPressCompanyLogoAdding}>
+                            <FontAwesome name="plus" size={30} color={Colors.LightGray}></FontAwesome>
+                        </TouchableOpacity>
+                    }
+
                     <FormInput
                         title="Position"
                         style={{ marginTop: 20 }}
-                        onFocus={() => setShowListPosition(true)}
+                        onFocus={() => {
+                            setShowListPosition(true);
+                            Keyboard.dismiss();
+                        }}
                         onChangeText={onChangeTextSearchPosition}
+                        showKeyboard={false}
                         value={position.name}
-                    ></FormInput>
+                    >
+                        {showListPosition ?
+                            <FlatList
+                                style={{
+                                    maxHeight: 150,
+                                    backgroundColor: 'white', marginHorizontal: 0,
+                                    padding: 10
+                                }}
+                                data={listPosition}
+                                renderItem={_renderItemPosition}
+                                keyExtractor={keyExtractorPosition}
+                                keyboardShouldPersistTaps='handled'
+                                nestedScrollEnabled={true}
+                            ></FlatList>
+                            : null
+                        }
+                    </FormInput>
+
                     <FormDropDown
                         title="Province"
                         value={province}
@@ -231,7 +297,6 @@ const RequirementScreen = () => {
                             }
                         }}
                     ></FormDropDown>
-
 
                     <FormDropDown
                         title="Industry"
@@ -262,12 +327,12 @@ const RequirementScreen = () => {
                         style={{ alignSelf: 'flex-start', marginBottom: 10 }}
                     ></TextHighLightButton>
 
-
                     <ItemHeader
                         title="Needed skills"
                         icon={iconHeader}
                         onPress={() => setModalAddVisible(true)}
                     ></ItemHeader>
+
                     {listRequireSkill ?
                         <FlatList
                             data={listRequireSkill}
@@ -285,24 +350,8 @@ const RequirementScreen = () => {
                     {/* Footer  */}
                     <Footer></Footer>
 
-
-
                 </ScrollView>
             </Delayed>
-            {showListPosition ?
-                <FlatList
-                    style={{
-                        maxHeight: 150, position: 'absolute', top: 285, right: 0, left: 0,
-                        backgroundColor: 'white', marginHorizontal: 0,
-                        padding: 10
-                    }}
-                    data={listPosition}
-                    renderItem={_renderItemPosition}
-                    keyExtractor={keyExtractorPosition}
-                    keyboardShouldPersistTaps='handled'
-                ></FlatList>
-                : null
-            }
 
         </View >
     );

@@ -13,12 +13,12 @@ const Delayed = (props) => {
         }, wait)
 
         return () => {
-            //thực thi một lần khi unmount
+            //thực thi khi unmount
             clearTimeout(timeHidden);
         }
     }, []);
 
-    return (hidden ? (noneLoading ? <View></View> : <ActivityIndicator size={'large'} color={colorLoading}></ActivityIndicator>) : props.children
+    return (hidden ? (noneLoading ? null : <ActivityIndicator size={'large'} color={colorLoading}></ActivityIndicator>) : props.children
     );
 }
 

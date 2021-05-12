@@ -55,7 +55,7 @@ import { Dimens } from '../../constansts/dimension';
 
 
 const EditIntroScreen = () => {
-    console.log("render Edit Intro Screen")
+
     //States
     const globalUser = useSelector(state => state.globalUser.globalUser);
     const [urlAvatar, setUrlAvatar] = useState(globalUser.urlavatar);
@@ -101,10 +101,7 @@ const EditIntroScreen = () => {
             underwork: underwork,
             path: path,
         }
-
         dispatch(onUpdateUser(user, imageSource));
-
-
     }
 
     const onPressEditAvatar = () => {

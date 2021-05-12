@@ -47,6 +47,7 @@ const ListRequestScreen = () => {
     //States
     const globalUser = useSelector(state => state.globalUser.globalUser);
     const deleteLoading = useSelector(state => state.request.deleteLoading);
+    const acceptLoading = useSelector(state => state.request.acceptLoading);
 
     //Others
     const navigation = useNavigation();
@@ -78,12 +79,8 @@ const ListRequestScreen = () => {
                     backgroundColor: Colors.Gray, margin: 2,
                     paddingHorizontal: 20, borderRadius: 5, elevation: 5
                 }} onPress={() => dispatch(deleteRequest(item._id, globalUser.email))}>
-                    {
-                        deleteLoading ?
-                            <ActivityIndicator size="small" color={'white'}></ActivityIndicator>
-                            :
-                            <Text style={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>deny</Text>
-                    }
+
+                    <Text style={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>deny</Text>
 
                 </TouchableOpacity>
             </View>
@@ -99,9 +96,18 @@ const ListRequestScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Header
-                screenName="List request"
-            ></Header>
+            {/* Phần Header */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Ionicons name="md-arrow-back" size={24} color={Colors.Gray}></Ionicons>
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>List request</Text>
+                {deleteLoading || acceptLoading ?
+                    <ActivityIndicator size="small" color={Colors.MainBlue}></ActivityIndicator>
+                    :
+                    <View style={{ width: 20 }}></View>
+                }
+            </View>
 
             {globalUser.requests.length > 0 ?
                 <FlatList
@@ -112,11 +118,6 @@ const ListRequestScreen = () => {
                 :
                 null
             }
-
-
-
-
-
 
         </View>
     );

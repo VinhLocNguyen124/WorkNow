@@ -2,6 +2,8 @@
 import database from '@react-native-firebase/database';
 import { fetchData, getData } from '../apis/apiCaller';
 
+
+
 const checkExistingRoom = (iduser1: String, iduser2: string, loadRoomInfo: Function, createNewRoom: Function) => {
     const query = database().ref("roomchats").orderByKey();
     query.once("value")
@@ -49,7 +51,7 @@ const createNewRoomChat = (iduser1: String, iduser2: string) => {
             .set({
                 content: " Nhắn tin với nhau thôi nào !! ^_^ ",
                 email: "",
-                time: Date.now(),
+                time: Date.now() - (1000 * 60 * 60 + 10),
                 username: "admin"
             })
     });
@@ -71,7 +73,7 @@ const loadRoomChatContent = async (key: string, callback: Function) => {
 }
 
 const getListRoomChat = (idCurrentUser: string, callback: Function) => {
-    const query = database().ref("roomchats").orderByKey();
+    const query = database().ref("roomchats").orderByChild('time');
     query.once("value")
         .then(async snapshot => {
             let rooms = [];
@@ -100,11 +102,10 @@ const getListRoomChat = (idCurrentUser: string, callback: Function) => {
                     }
                 });
 
-                callback(rooms);
+                callback(rooms.reverse());
             }
         });
 }
-
 
 
 const insertMessage = (msg: string, roomKey: string, user, callback: Function) => {
@@ -148,5 +149,5 @@ export {
     loadRoomChatContent,
     insertMessage,
     markAsReadMessage,
-    getListRoomChat
+    getListRoomChat,
 };

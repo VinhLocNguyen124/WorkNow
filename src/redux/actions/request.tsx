@@ -26,7 +26,7 @@ export const sendRequest = (idUserSend: string, idUserRecieve: string) => (dispa
                 type: ActionTypes.SEND_REQUEST_ERROR,
                 payload: data.message
             });
-            ToastAndroid.show(`Error: ${data.message.message || '1Unexpected Error!!!'}`, ToastAndroid.SHORT);
+            ToastAndroid.show(`Error: ${data.message || '1Unexpected Error!!!'}`, ToastAndroid.SHORT);
         }
     }).catch(error => {
         dispatch({
@@ -37,7 +37,7 @@ export const sendRequest = (idUserSend: string, idUserRecieve: string) => (dispa
     });
 }
 
-export const deleteRequest = (idrequest: string, email: string) => (dispatch, getState) => {
+export const deleteRequest = (idrequest: string, email: string, callback: Function = null) => (dispatch, getState) => {
 
     dispatch({
         type: ActionTypes.DELETE_REQUEST_LOADING
@@ -45,9 +45,12 @@ export const deleteRequest = (idrequest: string, email: string) => (dispatch, ge
 
     fetchData("requests/deleterequest/" + idrequest, "DELETE").then(data => {
         if (data.status === "success") {
+
             dispatch({
                 type: ActionTypes.DELETE_REQUEST_SUCCESS
             });
+            ToastAndroid.show(`Đã xóa yêu cầu kết nối !`, ToastAndroid.SHORT);
+
             getData("users/" + email).then(data => {
                 if (data) {
                     //can handle data with getState in here and then just dispatch
@@ -56,29 +59,33 @@ export const deleteRequest = (idrequest: string, email: string) => (dispatch, ge
                         payload: data
                     });
                 }
-            }).catch(error => {
-                ToastAndroid.show(`Error: ${error.message || 'Unexpected Error!!!'}`, ToastAndroid.SHORT);
-            });
-            ToastAndroid.show(`Đã xóa yêu cầu kết nối !`, ToastAndroid.SHORT);
-        } else {
-            dispatch({
-                type: ActionTypes.DELETE_REQUEST_ERROR,
-                payload: data.message
-            });
-            ToastAndroid.show(`Error: ${data.message.message || '1Unexpected Error!!!'}`, ToastAndroid.SHORT);
+            })
+
+            callback();
+
         }
     }).catch(error => {
         dispatch({
             type: ActionTypes.DELETE_REQUEST_ERROR,
             payload: error.message
         });
-        ToastAndroid.show(`Error: ${error.message || '2Unexpected Error!!!'}`, ToastAndroid.SHORT);
+        ToastAndroid.show(`Error: ${error.message || 'Unexpected Error!!!'}`, ToastAndroid.SHORT);
     });
 }
 
-export const acceptRequest = (idrequest: string, email: string) => (dispatch, getState) => {
+export const acceptRequest = (idrequest: string, email: String, callback: Function = null) => (dispatch, getState) => {
+    dispatch({
+        type: ActionTypes.ACCEPT_REQUEST_LOADING,
+    });
+
     fetchData("requests/acceptrequest/" + idrequest, "PUT").then(data => {
         if (data.status === "success") {
+
+            dispatch({
+                type: ActionTypes.ACCEPT_REQUEST_SUCCESS,
+            });
+            ToastAndroid.show(`Các bạn đã được kết nối với nhau !`, ToastAndroid.SHORT);
+
             getData("users/" + email).then(data => {
                 if (data) {
                     //can handle data with getState in here and then just dispatch
@@ -86,16 +93,15 @@ export const acceptRequest = (idrequest: string, email: string) => (dispatch, ge
                         type: ActionTypes.GET_USER_AND_SET_TO_GLOBAL,
                         payload: data
                     });
-                    ToastAndroid.show(`Các bạn đã được kết nối với nhau !`, ToastAndroid.SHORT);
                 }
-            }).catch(error => {
-                ToastAndroid.show(`Error: ${error.message || 'Unexpected Error!!!'}`, ToastAndroid.SHORT);
             });
 
-        } else {
-            ToastAndroid.show(`Error: ${data.message.message || '1Unexpected Error!!!'}`, ToastAndroid.SHORT);
+            callback();
         }
     }).catch(error => {
+        dispatch({
+            type: ActionTypes.ACCEPT_REQUEST_ERROR,
+        });
         ToastAndroid.show(`Error: ${error.message || '2Unexpected Error!!!'}`, ToastAndroid.SHORT);
     });
 }
@@ -131,12 +137,12 @@ export const disconnect = (idconnect: string, idcurrentuser: string) => (dispatc
 
     fetchData("requests/disconnect/" + idconnect, "DELETE").then(data => {
         if (data.status === "success") {
-            dispatch({
-                type: ActionTypes.DISCONNECT_SUCCESS
-            });
 
             getData("requests/friends/" + idcurrentuser).then(data => {
                 if (data) {
+                    dispatch({
+                        type: ActionTypes.DISCONNECT_SUCCESS
+                    });
                     dispatch({
                         type: ActionTypes.GET_LIST_FRIEND_SUCCESS,
                         payload: data
@@ -154,6 +160,30 @@ export const disconnect = (idconnect: string, idcurrentuser: string) => (dispatc
         ToastAndroid.show(`Error: ${error.message || '2Unexpected Error!!!'}`, ToastAndroid.SHORT);
     });
 }
+
+export const onSearchFriend = (textSearch: string, idcurrentuser: string) => (dispatch, getState) => {
+
+    const data = {
+        textSearch: textSearch,
+        idcurrentuser: idcurrentuser
+    }
+
+    fetchData("requests/search/friends", "POST", data).then(data => {
+        if (data) {
+
+            dispatch({
+                type: ActionTypes.SEARCH_FRIEND,
+                payload: data
+            });
+
+
+        }
+    }).catch(error => {
+        ToastAndroid.show(`Error: ${error.message || 'Unexpected Error!!!'}`, ToastAndroid.SHORT);
+    });
+}
+
+
 
 
 

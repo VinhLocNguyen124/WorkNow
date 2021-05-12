@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import {
     View,
     StyleSheet,
@@ -6,6 +6,8 @@ import {
     ActivityIndicator,
     TextInput,
     FlatList,
+    ToastAndroid,
+    Keyboard,
 } from 'react-native';
 
 //Firebase
@@ -17,6 +19,9 @@ import BackGround from './../../assets/images/svg/BackGround';
 import { styles } from '../Styles/styles';
 import { Paths } from '../../constansts/path';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
+//api
+import { getData } from '../../apis/apiCaller';
 
 //Navigation
 import { useNavigation } from '@react-navigation/native';
@@ -31,25 +36,31 @@ import Header from '../../components/Header';
 import SearchBar from '../../components/SearchBar';
 import ItemMessage from './components/ItemMessage';
 import Delayed from './../../components/Delayed';
+import ItemFriend from './components/ItemFriend'
 
 //Consts
 import { Colors } from '../../constansts/color';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
-import { ScrollView } from 'react-native-gesture-handler';
+import { getListFriend, onSearchFriend } from '../../redux/actions/request';
 
 
 const MessageScreen = () => {
     //States
     const globalUser = useSelector(state => state.globalUser.globalUser);
+    const listFriend = useSelector(state => state.request.listFriend);
     const [listRoom, setListRoom] = useState([]);
     const [loading, setLoading] = useState(false);
     const [refresh, setRefresh] = useState(false);
+    const [showListSearch, setShowListSearch] = useState(false);
+
 
 
     //Others
     const navigation = useNavigation();
+    const dispatch = useDispatch();
+    const typingTimeout = useRef(null);
 
     //------------------Effects------------------------
     useEffect(() => {
@@ -67,7 +78,7 @@ const MessageScreen = () => {
                         setLoading(false);
                     }
                 });
-            })
+            });
 
         return () => {
             database()
@@ -79,6 +90,16 @@ const MessageScreen = () => {
     }, [])
 
     //------------------Functions----------------------
+    const onChangeTextSearch = (text) => {
+        if (typingTimeout.current) {
+            clearTimeout(typingTimeout.current);
+        }
+
+        typingTimeout.current = setTimeout(() => {
+            dispatch(onSearchFriend(text, globalUser._id));
+        }, 500);
+
+    }
 
     const onRefresh = () => {
         setRefresh(true);
@@ -107,6 +128,25 @@ const MessageScreen = () => {
         []
     );
 
+    const renderItemSearch = useCallback(
+        ({ item }) => <ItemFriend
+            key={item.idconnect}
+            idconnect={item.idconnect}
+            iduser={item.iduser}
+            urlavatar={item.urlavatar}
+            username={item.username}
+            headline={item.headline}
+            email={item.email}
+        ></ItemFriend>
+        ,
+        []
+    );
+
+    const keyExtractorSearch = useCallback(
+        item => item.idconnect,
+        []
+    );
+
     return (
         <View style={styles.container}>
             <Header
@@ -115,7 +155,14 @@ const MessageScreen = () => {
             ></Header>
 
             <SearchBar
-                placeholder="Search messages"
+                placeholder="Find your friends"
+                onFocus={() => setShowListSearch(true)}
+                onClose={() => {
+                    setShowListSearch(false);
+                    Keyboard.dismiss();
+                }}
+                showCloseButton={showListSearch}
+                onChangeSearchText={onChangeTextSearch}
             ></SearchBar>
 
             {
@@ -129,6 +176,18 @@ const MessageScreen = () => {
                         onRefresh={onRefresh}
                         refreshing={refresh}
                     ></FlatList>
+            }
+
+            {
+                showListSearch ?
+                    <FlatList
+                        style={{ position: 'absolute', bottom: 0, right: 0, left: 0, top: 115, backgroundColor: 'white' }}
+                        data={listFriend}
+                        renderItem={renderItemSearch}
+                        keyExtractor={keyExtractorSearch}
+                        onRefresh={onRefresh}
+                        refreshing={refresh}
+                    ></FlatList> : null
             }
 
         </View>

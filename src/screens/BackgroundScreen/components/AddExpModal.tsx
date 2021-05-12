@@ -45,7 +45,7 @@ const AddExpModal = (props) => {
 
     //Others
     const dispatch = useDispatch();
-    const typingTimeout = useRef(null)
+    const typingTimeout = useRef(null);
 
     //------------------------------------Effects-----------------------------------------
     const onShowModal = () => {

@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 
 //Firebase
 import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 
 //Styles & Images & Icons
 import { styles } from '../Styles/styles';
@@ -22,13 +23,13 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 //helpers
 import { setI18nConfig, translate } from '../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
+import { knuth_shuffle } from '../../helpers/Algorithm';
 
 //redux & actions
 import { useSelector, useDispatch } from 'react-redux';
-import {
-    getListPost,
-} from '../../redux/actions/post';
+import { getListPost, } from '../../redux/actions/post';
 import { getUserAndSetToGobal } from '../../redux/actions/globalUser';
+import { handleMessageBadge, handleNotificationBadge } from '../../redux/actions/badge';
 
 //hooks
 
@@ -45,8 +46,6 @@ const HomeScreen = () => {
     const { email, displayName } = auth().currentUser;
 
     //States
-    // const [email, setEmail] = useState("");
-    // const [displayname, setDisplayName] = useState("");
     const screenLoading = useSelector(state => state.post.loading);
     const postData = useSelector(state => state.post.listPost);
 
@@ -56,11 +55,35 @@ const HomeScreen = () => {
 
     //-----------------------Effects-----------------------------------
     useEffect(() => {
+        let valueChatChangeListener;
+        let valueNotiChangeListener;
 
         dispatch(getUserAndSetToGobal(email));
         dispatch(getListPost(email));
-        // setEmail(email);
-        // setDisplayName(displayName);
+
+        //Lắng nghe thay đổi và cập nhật badge message
+        valueChatChangeListener = database()
+            .ref(`/roomchats`)
+            .on('value', snapshot => {
+                dispatch(handleMessageBadge(email));
+            });
+
+        //Firebase path không chứa các kí tự ".","#","$","[","]"
+        //Loại bỏ kí tự "." khỏi email
+        valueNotiChangeListener = database()
+            .ref(`/notifications/${email.replace(".", "")}`)
+            .on('value', snapshot => {
+                dispatch(handleNotificationBadge(email));
+            });
+
+        return () => {
+            database()
+                .ref(`/roomchats`)
+                .off('value', valueChatChangeListener);
+            database()
+                .ref(`/notifications/${email.replace(".", "")}`)
+                .off('value', valueNotiChangeListener);
+        }
 
     }, []);
 
@@ -70,8 +93,12 @@ const HomeScreen = () => {
         dispatch(getListPost(email));
     }
 
-    const signOutUser = () => {
-        auth().signOut();
+    const onPressScanQRCode = () => {
+
+    }
+
+    function mergeDedupe(arr) {
+        return [...new Set([].concat(...arr))];
     }
 
     const renderItem = useCallback(
@@ -79,16 +106,23 @@ const HomeScreen = () => {
             key={item._id}
             _id={item._id}
             emailuser={item.emailuser}
+            iduser={item.iduser}
+            idpostshare={item.idpostshare}
+            postshare={item.postshare}
             imgurl={item.imgurl}
             pdfurl={item.pdfurl}
             textcontent={item.content}
             date={item.date}
             seescope={item.seescope}
             allowcmt={item.allowcmt}
+            formal={item.formal}
             urlavatar={item.urlavatar}
             username={item.username}
             headline={item.headline}
             liked={item.liked}
+            likenumber={item.likenumber}
+            cmtnumber={item.cmtnumber}
+            recommend={item.recommend}
         ></PostItem>
         ,
         []
@@ -98,7 +132,6 @@ const HomeScreen = () => {
         item => item._id,
         []
     );
-
 
     return (
         <View style={[styles.container, { backgroundColor: Colors.LightGray }]}>
@@ -117,7 +150,7 @@ const HomeScreen = () => {
                     // value={value}
                     ></TextInput>
                 </View>
-                <TouchableOpacity >
+                <TouchableOpacity onPress={onPressScanQRCode}>
                     <Ionicons name="qr-code-sharp" size={25} color={Colors.Gray}></Ionicons>
                 </TouchableOpacity>
 
@@ -126,10 +159,10 @@ const HomeScreen = () => {
             {screenLoading ?
                 <View style={{ flex: 1, width: '100%', marginTop: 10 }}>
                     <Skeleton></Skeleton>
-                    <Skeleton></Skeleton>
                 </View>
                 :
                 <FlatList
+                    ItemSeparatorComponent={() => <View style={{ backgroundColor: Colors.LightGray, height: 5 }}></View>}
                     data={postData}
                     renderItem={renderItem}
                     keyExtractor={keyExtractor}

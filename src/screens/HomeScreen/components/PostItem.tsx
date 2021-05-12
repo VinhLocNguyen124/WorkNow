@@ -6,17 +6,15 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Image,
-    Button,
-    TextInput,
-    StyleSheet,
-    Dimensions,
+    Share,
     Modal,
 } from 'react-native';
+
+import auth from '@react-native-firebase/auth';
 
 //Styles & Images & Icons
 import { styles } from '../../Styles/styles';
 import { tempStyles } from '../Styles/index';
-import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -30,9 +28,9 @@ import { returnAvatarUser } from '../../../helpers/UIHandling';
 
 //Components
 import TextHighLight from '../../../components/TextHighLight';
-import { Picker } from 'native-base';
 import FullScreenImageModal from './FullScreenImageModal';
-import BottomSheetItem from '../../PostScreen/Components/BottomSheetItem';
+import BottomSheetModal from './BottomSheetModal';
+import PostShareThumbnail from '../../PostScreen/Components/PostShareThumbnail';
 
 //Consts
 import { Colors } from '../../../constansts/color';
@@ -43,25 +41,28 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { likePost, disLikePost } from '../../../redux/actions/post';
 
+
 //Navigation
 import { useNavigation } from '@react-navigation/native';
 
 const PostItem = (props) => {
+    const { email, displayName } = auth().currentUser;
 
     //Props 
-    const { key, _id, emailuser, seq, imgurl, textcontent, date, seescope, allowcmt, pdfurl, urlavatar, username, headline, liked } = props;
+    const { key, _id, emailuser, iduser, idpostshare, postshare, seq, imgurl, textcontent, date, seescope, allowcmt, formal, pdfurl, urlavatar, username, headline, liked, likenumber, cmtnumber, recommend } = props;
     console.log(`render PostItem ${seq}`)
 
     //State
     const [shortTextContent, setShortTextContent] = useState(true);
     const [seeMore, setSeeMore] = useState(false);
-    const [userRelation, setUserRelation] = useState('java');
-    const [likedPost, setLikedPost] = useState(false);
+    const [status, setStatus] = useState({
+        likePost: false,
+        likeNumber: 0
+    });
 
     const [visibleFullImg, setVisibleFullImg] = useState(false);
     const [visibleEditOption, setVisibleEditOption] = useState(false);
     const globalUser = useSelector(state => state.globalUser.globalUser);
-
     //Others
     const dispatch = useDispatch();
     const navigation = useNavigation();
@@ -69,12 +70,17 @@ const PostItem = (props) => {
     //-----------------------------------Effects-----------------------------------------
     useEffect(() => {
         checkTextContent();
-        setLikedPost(liked);
+        setStatus({
+            likePost: liked,
+            likeNumber: likenumber
+        })
 
         return () => {
 
         }
     }, []);
+
+
     //-----------------------------------Functions---------------------------------------
 
 
@@ -111,10 +117,16 @@ const PostItem = (props) => {
 
 
     return (
-        <View style={{ backgroundColor: 'white', marginBottom: 10 }}>
+        <View style={{ backgroundColor: 'white' }}>
             {/* Relation bar  */}
             <View style={tempStyles.relation_bar_container}>
-                <Text style={{ fontSize: 12 }}>Recommend for you</Text>
+                {
+                    recommend && email !== emailuser ?
+                        <Text style={{ fontSize: 12 }}>Recommend for you</Text>
+                        :
+                        <Text style={{ fontSize: 12 }}></Text>
+                }
+
 
                 <TouchableOpacity style={{ paddingVertical: 5, paddingLeft: 10 }} onPress={() => setVisibleEditOption(true)}>
                     <Ionicons name="ellipsis-horizontal" size={25} color={Colors.Gray}></Ionicons>
@@ -153,7 +165,7 @@ const PostItem = (props) => {
                 <View style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                     <TextHighLight
                         mainText={username}
-                        subText={'- 3rd+'}
+                        subText={email === emailuser ? '' : recommend ? '- 3rd+' : '- In your network'}
                         fontSizeMT={16}
                         fontSizeST={12}
                         colorST={Colors.Gray}
@@ -164,7 +176,7 @@ const PostItem = (props) => {
                                 navigation.navigate("GeneralProfile", { _email: emailuser })
                         }}
                     />
-                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.text}>{headline}</Text>
+                    {headline ? <Text numberOfLines={1} ellipsizeMode="tail" style={styles.text}>{headline}</Text> : null}
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
                         <Text style={styles.text}>{moment(date).fromNow()} - </Text>
                         <Ionicons name={seescope === "anyone" ? "earth" : "people"} size={14} color={Colors.Gray}></Ionicons>
@@ -173,9 +185,28 @@ const PostItem = (props) => {
                 </View>
             </View>
 
-
             {/* Text Content */}
             { renderTextContent()}
+
+            {/* PostShare content  */}
+            {
+                postshare ?
+                    <PostShareThumbnail
+                        margin={10}
+                        padding={5}
+                        idpostshare={idpostshare}
+                        imgurl={postshare.imgurl}
+                        textcontent={postshare.textcontent}
+                        date={postshare.date}
+                        seescope={postshare.seescope}
+                        urlavatar={postshare.urlavatar}
+                        username={postshare.username}
+                        headline={postshare.headline}
+                        emailuser={postshare.emailuser}
+                        recommend={postshare.recommend}
+                        onLongPress={() => navigation.navigate("PostDetail", { _idpost: idpostshare })}
+                    ></PostShareThumbnail> : null
+            }
 
             {/* Image if Its available */}
             {
@@ -190,38 +221,60 @@ const PostItem = (props) => {
                     null
             }
 
-
             {/* Reaction bar  */}
             <View style={tempStyles.reacttion_bar_container}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <AntDesign name="like1" size={18} color={likedPost ? Colors.MainBlue : Colors.Gray}></AntDesign>
-                    <Text style={styles.text}>{FormatNumber(19)}</Text>
+                    <AntDesign name="like1" size={18} color={status.likePost ? Colors.MainBlue : Colors.Gray}></AntDesign>
+                    <Text style={styles.text}> {status.likePost == true && status.likeNumber > 1 ? `You and ${FormatNumber(status.likeNumber - 1)} others` : status.likePost == true && status.likeNumber == 1 ? "You" : FormatNumber(status.likeNumber)}</Text>
                 </View>
-                <Text style={styles.text}>{FormatNumber(5)} comments</Text>
+                <Text style={styles.text}>{FormatNumber(cmtnumber)} comments</Text>
             </View>
-
 
             {/* Function bar */}
             <View style={tempStyles.function_bar_container}>
 
-                <Text style={[tempStyles.function_text, {
-                    color: likedPost ? Colors.MainBlue : Colors.Gray
-                }]} onPress={() => {
-                    if (!likedPost) {
-                        setLikedPost(true);
+                <TouchableOpacity onPress={() => {
+                    if (status.likePost === false) {
+                        setStatus({
+                            likePost: true,
+                            likeNumber: status.likeNumber + 1
+                        })
                         dispatch(likePost(globalUser._id, _id));
                     } else {
-                        setLikedPost(false);
+                        setStatus({
+                            likePost: false,
+                            likeNumber: status.likeNumber - 1
+                        })
                         dispatch(disLikePost(globalUser._id, _id));
                     }
 
-                }}>Like</Text>
+                }}>
+                    <Text style={[tempStyles.function_text, {
+                        color: status.likePost ? Colors.MainBlue : Colors.Gray
+                    }]} >Like</Text>
+                </TouchableOpacity>
 
-                {allowcmt === true ? <Text style={tempStyles.function_text} onPress={() => navigation.navigate("PostDetail", { _idpost: _id })}>Comment</Text> : null}
+                {allowcmt === true ?
+                    <TouchableOpacity onPress={() => navigation.navigate("PostDetail", { _idpost: _id })}>
+                        <Text style={tempStyles.function_text}>Comment</Text>
+                    </TouchableOpacity>
+                    : null
+                }
 
-                <Text style={tempStyles.function_text}>Share</Text>
-
-                <Text style={tempStyles.function_text}>Send</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("postModal", {
+                    _idpost: _id,
+                    _imgurl: imgurl,
+                    _textcontent: textcontent,
+                    _date: date,
+                    _seescope: seescope,
+                    _urlavatar: urlavatar,
+                    _username: username,
+                    _headline: headline,
+                    _emailuser: emailuser,
+                    _recommend: recommend
+                })}>
+                    <Text style={tempStyles.function_text}>Share</Text>
+                </TouchableOpacity>
 
             </View>
 
@@ -234,73 +287,14 @@ const PostItem = (props) => {
             }
 
             {
-                visibleEditOption ?
-                    <Modal
-                        animationType="fade"
-                        transparent={true}
-                        visible={visibleEditOption}
-                    >
-                        <View style={tempStyles.pi_all_container}>
-                            <TouchableOpacity style={tempStyles.pi_outside_touch} onPress={() => setVisibleEditOption(false)}>
-
-                            </TouchableOpacity>
-
-                            <View style={tempStyles.pi_main_container}>
-                                <View style={tempStyles.pi_header}>
-                                    <View style={tempStyles.pi_horizontal_bar}></View>
-                                </View>
-
-                                <BottomSheetItem
-                                    icon={<AntDesign name="disconnect" size={20} color={Colors.Gray}></AntDesign>}
-                                    label={"Disconnect this person"}
-                                    onPress={() => { }}
-                                ></BottomSheetItem>
-
-                                <BottomSheetItem
-                                    icon={<AntDesign name="edit" size={20} color={Colors.Gray}></AntDesign>}
-                                    label={"Edit this post"}
-                                    onPress={() => { }}
-                                ></BottomSheetItem>
-
-                                <BottomSheetItem
-                                    icon={<Ionicons name="notifications-off" size={20} color={Colors.Gray}></Ionicons>}
-                                    label={"Don't recieve notification from this post"}
-                                    onPress={() => { }}
-                                ></BottomSheetItem>
-
-                                <BottomSheetItem
-                                    icon={<Ionicons name="share-social-outline" size={20} color={Colors.Gray}></Ionicons>}
-                                    label={"Share with"}
-                                    onPress={() => { }}
-                                ></BottomSheetItem>
-
-                                {false ?
-                                    <BottomSheetItem
-                                        icon={<Feather name="shield-off" size={20} color={Colors.Gray}></Feather>}
-                                        label={"Make this post natural"}
-                                        onPress={() => { }}
-                                    ></BottomSheetItem>
-                                    :
-                                    <BottomSheetItem
-                                        icon={<Feather name="shield" size={20} color={Colors.Gray}></Feather>}
-                                        label={"Keep this post formal"}
-                                        onPress={() => { }}
-                                    ></BottomSheetItem>
-                                }
-
-                                <BottomSheetItem
-                                    icon={<AntDesign name="delete" size={20} color={Colors.Gray}></AntDesign>}
-                                    label={"Delete post"}
-                                    onPress={() => { }}
-                                ></BottomSheetItem>
-
-                                <View style={{ ...tempStyles.pi_header, height: 40 }} />
-
-                            </View>
-                        </View>
-                    </Modal>
-                    :
-                    null
+                visibleEditOption ? <BottomSheetModal
+                    _id={_id}
+                    emailuser={emailuser}
+                    iduser={iduser}
+                    recommend={recommend}
+                    visibleEditOption={visibleEditOption}
+                    onHideModal={() => setVisibleEditOption(false)}
+                ></BottomSheetModal> : null
             }
 
         </View >
@@ -311,6 +305,9 @@ PostItem.propTypes = ({
     seq: PropTypes.string,
     _id: PropTypes.string,
     emailuser: PropTypes.string,
+    iduser: PropTypes.string,
+    idpostshare: PropTypes.string,
+    postshare: PropTypes.any,
     key: PropTypes.string,
     imgurl: PropTypes.string,
     pdfurl: PropTypes.string,
@@ -318,20 +315,18 @@ PostItem.propTypes = ({
     date: PropTypes.string,
     seescope: PropTypes.string,
     allowcmt: PropTypes.bool,
+    formal: PropTypes.bool,
     urlavatar: PropTypes.string,
     username: PropTypes.string,
     headline: PropTypes.string,
     liked: PropTypes.bool,
+    likenumber: PropTypes.number,
+    cmtnumber: PropTypes.number,
+    recommend: PropTypes.bool
 });
 
 PostItem.defaultProps = ({
 
 });
-
-
-
-
-
-
 
 export default React.memo(PostItem);

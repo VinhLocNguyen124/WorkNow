@@ -44,6 +44,7 @@ import { CheckBox } from 'native-base';
 
 //consts
 import { Colors } from '../../constansts/color';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
     setI18nConfig();
@@ -51,13 +52,10 @@ const LoginScreen = () => {
     //States
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const savedEmail = useSelector(state => state.login.email);
-    const savedPassword = useSelector(state => state.login.password);
-    const savedCheckSaveAccount = useSelector(state => state.login.checkSaveAccount);
     const [hidePassword, setHidePassword] = useState(true);
     const [waitingLogin, setWaitingLogin] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
-    const [checkSaveAccount, setCheckSaveAccount] = useState(false);
+    const [checkSaveAccount, setCheckSaveAccount] = useState("0");
     const [visibleNoteModal, setVisibleNoteModal] = useState(false);
 
     //Others
@@ -67,9 +65,9 @@ const LoginScreen = () => {
     //-----------------------------------Effects-----------------------------------
     useEffect(() => {
         //similar with componentDidmount
-        setEmail(savedEmail);
-        setPassword(savedPassword);
-        setCheckSaveAccount(savedCheckSaveAccount);
+        // setEmail(savedEmail);
+        // setPassword(savedPassword);
+        getLoginInfo();
         RNLocalize.addEventListener('change', setI18nConfig);
 
         return () => {
@@ -87,6 +85,22 @@ const LoginScreen = () => {
      * useCallback được sử dụng để ngăn tạo mới function khi comp App rerender
      * useMemo được sử dụng để ngăn tạo mới data(biến, mảng,...) khi comp App rerender
     */
+
+    const getLoginInfo = async () => {
+        try {
+            const savedEmail = await AsyncStorage.getItem('email');
+            const savedPassword = await AsyncStorage.getItem('password');
+            const savedcheckSaveAccount = await AsyncStorage.getItem('checkSaveAccount');
+            console.log(savedcheckSaveAccount);
+            setEmail(savedEmail);
+            setPassword(savedPassword);
+            setCheckSaveAccount(savedcheckSaveAccount);
+        } catch (e) {
+            console.log(e);
+        }
+
+    }
+
     const handleLogin = () => {
         Keyboard.dismiss();
         setWaitingLogin(true);
@@ -96,12 +110,9 @@ const LoginScreen = () => {
         } else {
             auth().signInWithEmailAndPassword(email, password)
                 .then(value => {
-                    setWaitingLogin(false);
-                    if (checkSaveAccount) {
-                        dispatch(saveAccount(email, password, checkSaveAccount));
-                    } else {
-                        dispatch(saveAccount("", "", false));
-                    }
+
+                    dispatch(saveAccount(email, password, checkSaveAccount));
+
                 })
                 .catch(error => {
                     FirebaseErrorRespond(error.code, (mess) => setErrorMessage(mess));
@@ -173,7 +184,7 @@ const LoginScreen = () => {
                     </View>
 
                     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                        <CheckBox checked={checkSaveAccount} color={Colors.MainBlue} onPress={() => setCheckSaveAccount(!checkSaveAccount)} />
+                        <CheckBox checked={checkSaveAccount === "0" ? false : true} color={Colors.MainBlue} onPress={() => setCheckSaveAccount(checkSaveAccount === "0" ? "1" : "0")} />
                         <Text style={{ marginLeft: 20, marginBottom: 10 }}>{translate('Save your account')}</Text>
                     </View>
 

@@ -6,7 +6,7 @@ const Footer = () => {
     return (
 
         <Image source={require('../assets/images/textlogo.png')}
-            style={{ height: 100, width: 200, alignSelf: 'center', marginVertical: 10 }}
+            style={{ height: 100, width: 220, alignSelf: 'center', marginVertical: 0 }}
         ></Image>
 
 

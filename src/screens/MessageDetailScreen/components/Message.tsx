@@ -18,6 +18,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { setI18nConfig, translate } from '../../../helpers/setI18nConfig';
 import * as RNLocalize from 'react-native-localize';
 import moment from 'moment';
+import { returnAvatarUser } from '../../../helpers/UIHandling';
 
 //Components
 import Wellcome from './WellcomeChatRoom';
@@ -44,7 +45,7 @@ const Message = (props) => {
             <View style={{
                 flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', marginHorizontal: 5, marginVertical: 2
             }}>
-                {username === globalUser.username ? null : <Image source={{ uri: urlavatar }} style={{ height: imageDimen, width: imageDimen, borderRadius: imageDimen, marginBottom: 10 }}></Image>}
+                {username === globalUser.username ? null : <Image source={{ uri: returnAvatarUser(urlavatar) }} style={{ height: imageDimen, width: imageDimen, borderRadius: imageDimen, marginBottom: 10 }}></Image>}
                 <View style={{
                     flexDirection: 'column',
                     alignItems: username === globalUser.username ? 'flex-end' : 'flex-start',
@@ -64,10 +65,10 @@ const Message = (props) => {
                     }}>{content}</Text>
 
 
-                    <Text style={{ width: '95%', fontSize: 12, textAlign: username === globalUser.username ? 'right' : 'left' }} >{username} - <Text style={{ fontWeight: 'bold', color: Colors.DeepSkyBlue, fontSize: 12 }}>{moment(time).fromNow()}</Text></Text>
+                    <Text style={{ width: '95%', fontSize: 10, textAlign: username === globalUser.username ? 'right' : 'left', marginHorizontal: 5, fontWeight: 'bold' }} >{username} - <Text style={{ fontWeight: 'bold', color: Colors.DeepSkyBlue, fontSize: 10 }}>{moment(time).fromNow()}</Text></Text>
 
                 </View>
-                {username !== globalUser.username ? null : <Image source={{ uri: globalUser.urlavatar }} style={{ height: imageDimen, width: imageDimen, borderRadius: imageDimen, marginBottom: 10 }}></Image>}
+                {username !== globalUser.username ? null : <Image source={{ uri: returnAvatarUser(globalUser.urlavatar) }} style={{ height: imageDimen, width: imageDimen, borderRadius: imageDimen, marginBottom: 10 }}></Image>}
             </View>
 
     );

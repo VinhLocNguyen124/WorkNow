@@ -10,6 +10,8 @@ import companyReducer from './company';
 import generalUserReducer from './generalUser';
 import requestReducer from './request';
 import requirementReducer from './requirement';
+import notificationReducer from './notification';
+import badgeReducer from './badge';
 
 const rootReducer = combineReducers({
     post: postReducer,
@@ -22,7 +24,9 @@ const rootReducer = combineReducers({
     company: companyReducer,
     generalUser: generalUserReducer,
     request: requestReducer,
-    requirement: requirementReducer
+    requirement: requirementReducer,
+    notification: notificationReducer,
+    badge: badgeReducer
 });
 
 export default rootReducer;

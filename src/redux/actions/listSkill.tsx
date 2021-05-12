@@ -17,6 +17,14 @@ export const onAddRequireSkill = (skill) => (dispatch, getState) => {
             payload: skill
         });
     }
+}
+
+export const onDeleteRequireSkill = (index: number) => (dispatch, getState) => {
+
+    dispatch({
+        type: ActionTypes.DELETE_REQUIRE_SKILL,
+        payload: index
+    });
 
 }
 
@@ -52,14 +60,14 @@ export const onAddSkill = (userskill, email: string) => (dispatch, getState) => 
                         type: ActionTypes.ADD_SKILL_ERROR,
                     });
                     ToastAndroid.show(`Error: ` + error.message, ToastAndroid.SHORT);
-                })
+                });
             }
         }).catch(error => {
             dispatch({
                 type: ActionTypes.ADD_SKILL_ERROR,
             });
             ToastAndroid.show(`Error: ` + error.message, ToastAndroid.SHORT);
-        })
+        });
     }
 }
 
@@ -78,7 +86,6 @@ export const onChangeImportantSkill = (important: boolean, idSkill: string, emai
             } else {
                 ToastAndroid.show("Bỏ đánh dấu kĩ năng tốt thành công!!", ToastAndroid.SHORT);
             }
-
         }
     } catch (error) {
         ToastAndroid.show(`Error: ` + error.message, ToastAndroid.SHORT);

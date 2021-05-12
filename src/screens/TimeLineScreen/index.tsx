@@ -6,6 +6,7 @@ import {
     Image,
     TextInput,
     StyleSheet,
+    Animated,
     FlatList,
     ActivityIndicator,
 } from 'react-native';
@@ -17,6 +18,7 @@ import auth from '@react-native-firebase/auth';
 //Styles & Images & Icons
 import { styles } from '../Styles/styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 //helpers
 import { setI18nConfig, translate } from '../../helpers/setI18nConfig';
@@ -25,8 +27,8 @@ import * as RNLocalize from 'react-native-localize';
 //redux & actions
 import { useSelector, useDispatch } from 'react-redux';
 import {
-    getListPost,
-
+    getListPostTimeline,
+    clearListPostTimeline
 } from '../../redux/actions/post';
 
 //hooks
@@ -34,58 +36,90 @@ import {
 //Components
 import PostItem from '../HomeScreen/components/PostItem';
 import Skeleton from '../../components/Skeleton';
-import Header from '../../components/Header';
 import Delayed from '../../components/Delayed';
+import FilterPost from './components/FilterPost';
+const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
 
 //Consts
 import { Colors } from '../../constansts/color';
 
 
 const TimelineScreen = () => {
-    //States
-    const [email, setEmail] = useState("");
-    const [displayname, setDisplayName] = useState("");
-    const screenLoading = useSelector(state => state.post.loading);
-    const postData = useSelector(state => state.post.listPost);
+    const { email, displayName } = auth().currentUser;
 
+    //States
+    const screenLoading = useSelector(state => state.post.loadingTimeline);
+    const postData = useSelector(state => state.post.listPostTimeline);
 
     //Others
     const dispatch = useDispatch();
     const navigation = useNavigation();
+    const animatedValue = useRef(new Animated.Value(0)).current;
+    const count = useRef(true);
 
-    //-----------------------Effects-----------------------------------
-    useEffect(() => {
-        const { email, displayName } = auth().currentUser;
-        setEmail(email);
-        setDisplayName(displayName);
-    }, []);
+    //-----------------------Effects----------------------------------
 
     useEffect(() => {
-        dispatch(getListPost());
+        dispatch(getListPostTimeline(email));
         return () => {
-
+            dispatch(clearListPostTimeline());
         }
     }, []);
 
     //-----------------------Functions---------------------------------
 
     const refreshListPost = () => {
-        dispatch(getListPost());
+        dispatch(getListPostTimeline(email));
     }
 
-    const signOutUser = () => {
-        auth().signOut();
+    const onClickExtendArrow = () => {
+        if (count.current) {
+            Animated.spring(animatedValue, {
+                toValue: 1,
+                friction: 3,
+                tension: 2,
+                useNativeDriver: false
+            }).start();
+            count.current = false;
+        } else {
+            if (!count.current) {
+                Animated.timing(animatedValue, {
+                    toValue: 0,
+                    duration: 200,
+                    useNativeDriver: false
+                }).start();
+                count.current = true;
+            }
+        }
+    }
+
+    const onCloseFilterPost = () => {
+
     }
 
     const renderItem = useCallback(
         ({ item }) => <PostItem
             key={item._id}
-            seq={item._id}
+            _id={item._id}
+            emailuser={item.emailuser}
+            iduser={item.iduser}
+            idpostshare={item.idpostshare}
+            postshare={item.postshare}
             imgurl={item.imgurl}
+            pdfurl={item.pdfurl}
             textcontent={item.content}
             date={item.date}
             seescope={item.seescope}
             allowcmt={item.allowcmt}
+            formal={item.formal}
+            urlavatar={item.urlavatar}
+            username={item.username}
+            headline={item.headline}
+            liked={item.liked}
+            likenumber={item.likenumber}
+            cmtnumber={item.cmtnumber}
+            recommend={item.recommend}
+            onLongPress={() => navigation.navigate("PostDetail", { _idpost: item.idpostshare })}
         ></PostItem>
         ,
         []
@@ -96,73 +130,64 @@ const TimelineScreen = () => {
         []
     );
 
-
     return (
         <View style={[styles.container, { backgroundColor: Colors.LightGray }]}>
             {/*  Header  */}
-            <Header
-                screenName="Your Timeline"
-                noneBackButton={false}
-            ></Header>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Ionicons name="md-arrow-back" size={26} color={Colors.Gray}></Ionicons>
+                </TouchableOpacity>
 
-            <View style={{ height: 60, justifyContent: 'center', backgroundColor: 'white', marginBottom: 10 }}>
-                <View style={tempStyles.search_bar_container}>
-                    <Ionicons name="search" size={18} color={'black'} />
-                    <TextInput
-                        style={tempStyles.input_search_bar}
-                        autoCapitalize="none"
-                        placeholder="Search"
-                    // onChangeText={onChangeText}
-                    // value={value}
-                    ></TextInput>
-                </View>
+                <Text style={styles.headerTitle}>Timeline</Text>
+
+                {
+                    false ?
+                        <ActivityIndicator size="small" color={Colors.MainBlue}></ActivityIndicator>
+                        :
+                        <TouchableOpacity style={{ paddingLeft: 6 }} onPress={onClickExtendArrow}>
+                            <AnimatedIcon
+                                style={{
+                                    transform: [{
+                                        rotate: animatedValue.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: ['360deg', '270deg']
+                                        })
+                                    }]
+                                }}
+                                name="caretleft"
+                                size={18}
+                                color={Colors.Gray}></AnimatedIcon>
+                        </TouchableOpacity>
+                }
             </View>
 
+            {/* Filter  */}
+            <Delayed wait={500}>
+                <FilterPost
+                    animatedValue={animatedValue}
+                    onPressCancel={onClickExtendArrow}
+                ></FilterPost>
+            </Delayed>
 
-
-
-            {/* NewsFeed */}
+            {/* Timeline */}
             {screenLoading ?
-                <View style={{ flex: 1, width: '100%', marginTop: 10 }}>
-                    <Skeleton></Skeleton>
+                <View style={{ flex: 1, width: '100%', backgroundColor: Colors.LightGray }}>
                     <Skeleton></Skeleton>
                 </View>
                 :
-                <Delayed wait={50} noneLoading={false}>
-                    <FlatList
-                        data={postData}
-                        renderItem={renderItem}
-                        keyExtractor={keyExtractor}
-                        maxToRenderPerBatch={5}
-                        windowSize={5}
-                        onRefresh={refreshListPost}
-                        refreshing={screenLoading}
-                    ></FlatList>
-                </Delayed>
-
+                <FlatList
+                    ItemSeparatorComponent={() => <View style={{ backgroundColor: Colors.LightGray, height: 5 }}></View>}
+                    data={postData}
+                    renderItem={renderItem}
+                    keyExtractor={keyExtractor}
+                    maxToRenderPerBatch={5}
+                    windowSize={5}
+                    onRefresh={refreshListPost}
+                    refreshing={screenLoading}
+                ></FlatList>
             }
         </View>
     );
 }
-
-
-const tempStyles = StyleSheet.create({
-    search_bar_container: {
-        flexDirection: 'row',
-        backgroundColor: Colors.Cyan,
-        height: 40,
-        alignItems: 'center',
-        paddingHorizontal: 10,
-        marginHorizontal: 10,
-        borderRadius: 5,
-    },
-    input_search_bar: {
-        color: Colors.Gray,
-        fontSize: 12,
-        marginLeft: 5,
-        flex: 1,
-        textAlignVertical: 'center'
-    },
-});
 
 export default TimelineScreen;

@@ -91,6 +91,7 @@ const RegisterScreen = () => {
                     if (checkSaveAccount) {
                         dispatch(saveAccount(email, password, true));
                     }
+
                     const user = {
                         username: name,
                         email: email,

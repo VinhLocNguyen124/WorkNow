@@ -24,22 +24,11 @@ const iconHeader = <Ionicons name="arrow-back" size={30} color={'white'}></Ionic
 
 const FullScreenImageModal = (props) => {
     //Props
-    const { visible, onPressClose, imgurl } = props;
-    const [imgDimen, setImgDimen] = useState({
-        width: Dimens.retangleImageFitScreen.width,
-        height: Dimens.retangleImageFitScreen.height
-    });
+    const { visible, onPressClose, imgurl, } = props;
 
     //------------------------Effects---------------------------
     useEffect(() => {
 
-        const getSizeTimeout = setTimeout(() => {
-            Image.getSize(imgurl, (width, height) => setImgDimen({ width, height }))
-        }, 0);
-
-        return () => {
-            clearTimeout(getSizeTimeout);
-        }
     }, []);
 
     return (
@@ -48,41 +37,28 @@ const FullScreenImageModal = (props) => {
             transparent={true}
             visible={visible}
         >
-            {/* <View style={{
-                flex: 1,
-                flexDirection: 'column',
-                backgroundColor: 'rgba(0, 0, 0,0.9)',
-                justifyContent: "center",
-                alignItems: 'center',
-            }}> */}
-            {/* <View style={{
-                width: Dimens.widthScreen,
-                height: Dimens.heightScreen,
-                justifyContent: "center",
-                alignItems: 'center',
-            }}>
-                <Image source={{ uri: imgurl }} style={{
-                    width: imgDimen.height < imgDimen.width ? FitImageDimension(imgDimen.width, imgDimen.height, 'w') : FitImageDimension(imgDimen.width, imgDimen.height, 'w') * 0.9,
-                    height: imgDimen.height < imgDimen.width ? FitImageDimension(imgDimen.width, imgDimen.height, 'w') : FitImageDimension(imgDimen.width, imgDimen.height, 'h') * 0.9,
-                }} /> */}
+
             <ImageViewer imageUrls={[
                 {
                     url: imgurl,
-                    width: imgDimen.height < imgDimen.width ? FitImageDimension(imgDimen.width, imgDimen.height, 'h') : FitImageDimension(imgDimen.width, imgDimen.height, 'w') * 0.9,
-                    height: imgDimen.height < imgDimen.width ? FitImageDimension(imgDimen.width, imgDimen.height, 'w') : FitImageDimension(imgDimen.width, imgDimen.height, 'h') * 0.9
-
                 }
             ]}
                 enableImageZoom={true}
+
             ></ImageViewer>
 
-            <TouchableOpacity style={{ position: 'absolute', top: 22, left: 12 }} onPress={onPressClose}>
-                {iconHeader}
-            </TouchableOpacity>
-            {/* </View> */}
+            <View style={{
+                width: '100%', position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: 'rgb(0,0,0)', padding: 10
+            }}>
+                <TouchableOpacity style={{ alignSelf: 'flex-start', padding: 10 }} onPress={onPressClose}>
+                    {iconHeader}
+                </TouchableOpacity>
+            </View>
 
+            <View style={{
+                width: '100%', position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgb(0,0,0)', height: 20
+            }}></View>
 
-            {/* </View> */}
         </Modal >
     );
 };
@@ -97,4 +73,4 @@ FullScreenImageModal.defaultProps = ({
     onPressClose: null
 });
 
-export default React.memo(FullScreenImageModal);
+export default FullScreenImageModal;

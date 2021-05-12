@@ -4,6 +4,7 @@ const initialState = {
     sendLoading: false,
     sendError: null,
     deleteLoading: false,
+    acceptLoading: false,
     deleteError: null,
     status: "not",
 
@@ -110,6 +111,38 @@ const loginReducer = (state = initialState, action) => {
                 ...state,
                 disconnectLoading: false,
                 disconnectError: action.payload
+            }
+            break;
+        }
+
+        case ActionTypes.ACCEPT_REQUEST_LOADING: {
+            return {
+                ...state,
+                acceptLoading: true
+            }
+            break;
+        }
+
+        case ActionTypes.ACCEPT_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                acceptLoading: false
+            }
+            break;
+        }
+
+        case ActionTypes.ACCEPT_REQUEST_ERROR: {
+            return {
+                ...state,
+                acceptLoading: false,
+            }
+            break;
+        }
+
+        case ActionTypes.SEARCH_FRIEND: {
+            return {
+                ...state,
+                listFriend: action.payload
             }
             break;
         }

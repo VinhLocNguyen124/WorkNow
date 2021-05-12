@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WorkNow</string>
+    <string name="notification_channel_id">notification_chanel</string>
 </resources>

@@ -10,12 +10,15 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.14.1",
+    "@react-native-community/datetimepicker": "^3.4.6",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/progress-bar-android": "^1.0.4",
     "@react-native-community/progress-view": "^1.2.3",
     "@react-native-firebase/app": "^10.1.0",
     "@react-native-firebase/auth": "^10.1.1",
     "@react-native-firebase/database": "^10.8.1",
+    "@react-native-firebase/messaging": "11.1.0",
     "@react-native-picker/picker": "^1.9.8",
     "@react-navigation/bottom-tabs": "^5.11.2",
     "@react-navigation/drawer": "^5.11.4",

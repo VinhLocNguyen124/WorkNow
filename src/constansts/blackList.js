@@ -1,0 +1,21 @@
+export const blackList = [
+    'duma',
+    'dume',
+    'đụ',
+    'địt',
+    'mày',
+    'nứng',
+    'lồn',
+    'cặc',
+    'loz',
+    'dcm',
+    'dmm',
+    'cdmm',
+    'ccdm',
+    'cc',
+    'đĩ',
+    'má',
+    'fuck',
+    'shit',
+    'fucking'
+]

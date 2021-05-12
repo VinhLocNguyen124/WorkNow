@@ -5,7 +5,7 @@ import { styles } from '../screens/Styles/styles';
 
 const FormInput = (props) => {
     console.log('render FormInput')
-    const { title, onChangeText, value, style, contentType, onFocus } = props;
+    const { title, onChangeText, value, style, contentType, onFocus, children, showKeyboard } = props;
     return (
         <View style={style}>
             <Text style={styles.inputTitle}>{title}</Text>
@@ -16,13 +16,14 @@ const FormInput = (props) => {
                 value={value}
                 onFocus={onFocus}
                 textContentType={contentType}
+                showSoftInputOnFocus={showKeyboard}
             ></TextInput>
+            {children}
         </View>
     );
 }
 
 const areEqual = (prevProps, nextProps) => {
-
     return prevProps.title === nextProps.title &&
         prevProps.onChangeText === nextProps.onChangeText &&
         prevProps.value === nextProps.value;
@@ -34,11 +35,14 @@ FormInput.propTypes = {
     title: PropTypes.string,
     value: PropTypes.string,
     style: PropTypes.object,
+    children: PropTypes.element,
     contentType: PropTypes.string,
+    showKeyboard: PropTypes.bool
 };
 
 FormInput.defaultProps = {
     onChangeText: null,
+    showKeyboard: true
 }
 
 // export default React.memo(FormInput, areEqual);

@@ -2,6 +2,9 @@ import * as ActionTypes from './actionTypes';
 import { getData, fetchData } from '../../apis/apiCaller';
 import { ToastAndroid } from 'react-native';
 import { cloudinaryUploadImage } from '../../helpers/MediaConfig';
+import messaging from '@react-native-firebase/messaging';
+import database from '@react-native-firebase/database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const addEducation = (userschool, email: string) => async (dispatch, getState) => {
 
@@ -75,8 +78,6 @@ export const deleteEducation = (iduserschool: string, email: string) => async (d
     }
 }
 
-
-
 export const addExperience = (usercompany, email: string) => async (dispatch, getState) => {
 
     await dispatch({
@@ -149,8 +150,6 @@ export const deleteExperience = (idusercompany: string, email: string) => async 
     }
 }
 
-
-
 export const onUpdateUser = (user, imageSource) => (dispatch, getState) => {
     dispatch({
         type: ActionTypes.UPDATE_USER_LOADING,
@@ -219,11 +218,47 @@ export const onUpdateUser = (user, imageSource) => (dispatch, getState) => {
 export const getUserAndSetToGobal = (email) => (dispatch, getState) => {
     getData("users/" + email).then(data => {
         if (data) {
-            //can handle data with getState in here and then just dispatch
             dispatch({
                 type: ActionTypes.GET_USER_AND_SET_TO_GLOBAL,
                 payload: data
             });
+
+            //Lắng nghe thay đổi của user và cập nhật
+            database()
+                .ref(`/users/` + data._id)
+                .on('value', snapshot => {
+                    getData("users/" + email).then(data => {
+                        if (data) {
+                            dispatch({
+                                type: ActionTypes.GET_USER_AND_SET_TO_GLOBAL,
+                                payload: data
+                            });
+                        }
+                    })
+                });
+
+            //User sau khi Sign out sẽ delete token và khi đăng nhập sẽ tạo mới token và update vào db 
+            messaging().getToken()
+                .then(fcmToken => {
+                    if (fcmToken) {
+                        console.log("Create new token: ", fcmToken);
+                        try {
+                            AsyncStorage.setItem('token', fcmToken);
+                        } catch (e) {
+                            console.log(e);
+                        }
+
+                        fetchData('firebase/saveusertoken', "POST", {
+                            iduser: data._id,
+                            email: email,
+                            token: fcmToken,
+                        })
+                    } else {
+                        console.log("[FCMService] User does not have a devices token")
+                    }
+                }).catch(error => {
+                    console.log("[FCMService] getToken Rejected", error);
+                })
         }
     }).catch(error => {
         ToastAndroid.show(`Error: ${error.message || 'Unexpected Error!!!'}`, ToastAndroid.SHORT);

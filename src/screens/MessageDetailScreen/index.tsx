@@ -50,6 +50,7 @@ import { returnAvatarUser } from '../../helpers/UIHandling';
 
 //redux & actions
 import { useSelector, useDispatch } from 'react-redux';
+import { onTriggerNewMessageNotification } from '../../redux/actions/notification';
 
 //Firebase 
 import database from '@react-native-firebase/database';
@@ -180,6 +181,7 @@ const MessageDetailScreen = () => {
             setSendLoading(false);
             setMessage("");
         });
+        dispatch(onTriggerNewMessageNotification(roomKey, message, globalUser._id, globalUser.username, globalUser.urlavatar, messages[0].time.toString()))
     }
 
     const renderItem = useCallback(
@@ -211,11 +213,11 @@ const MessageDetailScreen = () => {
                 <Image source={{ uri: returnAvatarUser(user.urlavatar) }} style={{ ...styles.avatarSmall, marginLeft: 10, marginRight: 10 }} />
                 <View style={{ flexDirection: 'column', width: 200 }}>
                     <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{user.username}</Text>
-                    <Text
+                    {user.headline ? <Text
                         numberOfLines={1}
                         ellipsizeMode="tail"
                         style={{ color: Colors.Gray, fontSize: 12 }}
-                    >{user.headline}</Text>
+                    >{user.headline}</Text> : null}
                 </View>
             </View>
 

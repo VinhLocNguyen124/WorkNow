@@ -4,11 +4,11 @@ export const listSkillDefault = [
         type: "fw"
     },
     {
-        name: "React.js",
+        name: "ReactJS",
         type: "fw"
     },
     {
-        name: "Node.js",
+        name: "NodeJS",
         type: "fw"
     },
     {

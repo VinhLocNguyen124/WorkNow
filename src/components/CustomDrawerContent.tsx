@@ -30,6 +30,9 @@ import { useSelector } from 'react-redux';
 
 //helpers
 import { returnAvatarUser } from '../helpers/UIHandling';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchData } from '../apis/apiCaller';
+import { fcmService } from '../notifications/FCMService';
 
 
 const CustomDrawerContent = (props) => {
@@ -38,8 +41,20 @@ const CustomDrawerContent = (props) => {
     //State
     const globalUser = useSelector(state => state.globalUser.globalUser);
 
+    //-----------------------------Functions-------------------------------
+    const onPressScanQRCode = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            await fetchData('test/' + token, 'POST')
+
+            console.log(token);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     return (
-        <DrawerContentScrollView>
+        <DrawerContentScrollView showsVerticalScrollIndicator={false}>
 
             <View style={{ height: Dimens.heightScreen }}>
                 <BackGround path={Paths.Drawer} style={{ marginTop: -10 }} />
@@ -99,12 +114,15 @@ const CustomDrawerContent = (props) => {
                     />
                     <DrawerItem
                         label="Scan QR Code"
-                        onPress={() => console.log("hello")}
+                        onPress={onPressScanQRCode}
                         icon={() => <AntDesign name="qrcode" size={18} color={Colors.Gray}></AntDesign>}
                     />
                     <DrawerItem
                         label="Sign Out"
-                        onPress={() => auth().signOut()}
+                        onPress={() => {
+                            auth().signOut();
+                            fcmService.deleteToken();
+                        }}
                         icon={() => <AntDesign name="logout" size={18} color={Colors.Gray}></AntDesign>}
                     />
 

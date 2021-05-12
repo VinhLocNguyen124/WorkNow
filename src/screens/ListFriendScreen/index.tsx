@@ -17,7 +17,7 @@ import { FirebaseErrorRespond } from '../../helpers/FirebaseErrorRespond';
 
 //Styles & Images & Icons
 import { styles } from '../Styles/styles';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 //redux 
 import { useSelector, useDispatch } from 'react-redux';
@@ -46,6 +46,7 @@ const ListFriendScreen = () => {
     const globalUser = useSelector(state => state.globalUser.globalUser);
     const listFriend = useSelector(state => state.request.listFriend);
     const getListFriendLoading = useSelector(state => state.request.getListFriendLoading);
+    const disconnectLoading = useSelector(state => state.request.disconnectLoading);
 
 
     //Others
@@ -86,9 +87,19 @@ const ListFriendScreen = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: 'white' }]}>
-            <Header
-                screenName="Friend List"
-            ></Header>
+
+            {/* Phần Header */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Ionicons name="md-arrow-back" size={24} color={Colors.Gray}></Ionicons>
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Friend List</Text>
+                {disconnectLoading ?
+                    <ActivityIndicator size="small" color={Colors.MainBlue}></ActivityIndicator>
+                    :
+                    <View style={{ width: 20 }}></View>
+                }
+            </View>
 
             {getListFriendLoading ?
                 <ActivityIndicator size="large" color={Colors.MainBlue}></ActivityIndicator>

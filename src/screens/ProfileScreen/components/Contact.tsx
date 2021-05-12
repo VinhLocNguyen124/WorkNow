@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -45,6 +45,7 @@ const Contact = (props) => {
     const { } = props;
     const globalUser = useSelector(state => state.globalUser.globalUser);
 
+    //---------------------------------------------------------------------------
     return (
         <View style={{
             flexDirection: 'column',

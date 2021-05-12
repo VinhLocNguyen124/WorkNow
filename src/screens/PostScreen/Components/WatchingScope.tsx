@@ -54,7 +54,6 @@ const WatchingScope = (props) => {
                 <Text style={styles.largeTitle}>Who can see this post?</Text>
                 <Text style={[styles.text, { marginBottom: 10 }]}>Your post will be visible on feed, on your profile and in search results</Text>
 
-
                 <View style={tempStyles.ws_view1}>
 
                     <Ionicons name="md-earth-sharp" size={30} color={Colors.Gray}></Ionicons>
@@ -93,7 +92,6 @@ const WatchingScope = (props) => {
                         <Text style={styles.text}>You can change this setting later</Text>
                     </View>
                     <Switch
-
                         trackColor={{ false: "#767577", true: "#81b0ff6E" }}
                         thumbColor={allowCmt ? Colors.MainBlue : "#f4f3f4"}
                         ios_backgroundColor="#3e3e3e"

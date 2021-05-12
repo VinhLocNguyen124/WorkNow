@@ -61,6 +61,15 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    button_date: {
+        borderColor: Colors.LightGray,
+        borderWidth: 2,
+        padding: 5,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
     highLightText: {
         color: Colors.DeepSkyBlue,
         fontWeight: 'bold',

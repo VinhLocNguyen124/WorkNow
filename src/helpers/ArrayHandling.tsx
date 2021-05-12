@@ -1,3 +1,5 @@
+import { blackList } from '../constansts/blackList';
+
 
 const returnExpectSkillArray = (array) => {
     let newListSkillDefault = [];
@@ -53,4 +55,25 @@ const filterSubSkill = (arrSkill) => {
     return array;
 }
 
-export { returnExpectSkillArray, checkExistingItemInArray, returnExpectUniArray, filterBestSkill, filterSubSkill }
+const checkBlackListCondition = (commentContent: string, resolve: Function, reject: Function) => {
+    const arrCmtContentSplit = commentContent.trim().toLowerCase().split(" ");
+    let violations = [];
+
+    arrCmtContentSplit.forEach((elm, index) => {
+        if (blackList.includes(elm)) {
+            violations.push(elm)
+        }
+    });
+
+
+    if (violations.length > 0) {
+        // Do when violating the condition
+        reject(violations.toString());
+    } else {
+        // Do when having no word violate the condition
+        resolve();
+    }
+
+}
+
+export { returnExpectSkillArray, checkExistingItemInArray, returnExpectUniArray, filterBestSkill, filterSubSkill, checkBlackListCondition }
